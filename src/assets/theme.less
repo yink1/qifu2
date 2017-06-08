@@ -1,0 +1,75 @@
+@import "../../node_modules/muse-ui/less/vars.less"; // 默认基础的变量
+
+@fontFamily: Roboto, Lato, sans-serif;  // 字体
+// 主色和强调色
+@grey10086:#083c6f;
+@accent:#ffaa00;
+@primaryColor:@grey10086;           // 主色
+@darkerPrimaryColor:@fullBlack;  // 更深的主色
+@lighterPrimaryColor:@white;      // 浅一点的主色
+@accentColor:@accent;             // 强调色
+@darkerAccentColor: @grey100;        // 更深的强调色
+@lighterAccentColor: @grey500;       // 浅一点的强调色
+
+// 文本颜色
+@textColor: @white;
+@secondaryTextColor:rgba(0,0,0,0.54);
+@alternateTextColor:@grey10086;
+@borderColor:#bcbcbc;
+@disabledColor: fade(@fullBlack, 38%);
+
+// background
+@backgroundColor: @white;           // 背景色
+@statusBarBackgroundColor: @grey300; // web项目没有状态栏，所以也没有使用
+@appbarBackgroundColor: @grey100; // 并未在appbar组件中应用
+@dialogBackgroundColor:@white; // dialogs、 cards、 paper 组件背景
+
+// icon color
+@activeIconColor: fade(@fullBlack, 54%);
+@inActiveIconColor: fade(@fullBlack, 38%);
+
+@import "../../node_modules/muse-ui/less/theme-vars.less";  // 默认组件变量
+//首页顶部导航
+@appbarTextColor:@white;
+@appbarColor:@darkerPrimaryColor;
+
+@tabsBackgroundColor:rgba(242,242,242,0.95);
+@subHeaderColor:@grey10086;
+//中间导航
+@tabsTextColor:#999;
+//按钮
+@flatButtonTextColor:@grey10086;
+@floatButtonIconColor:@white;
+@checkboxColor: @accent;
+@checkboxTextColor: #444;
+@checkboxDisabledColor: @disabledColor;
+@checkboxCheckedColor: @accent;
+@listTextColor:rgba(0,0,0,.8);
+
+@chipColor:rgb(255,187,51);
+@chipHoverColor:#feac00;
+@chipTextColor:@white;
+@chipDeleteColor:rgba(0,0,0,.2);
+.mu-chip.hover .mu-chip-delete-icon{color: rgba(0,0,0,.4) !important;}
+//底部导航
+@bottomNavBackgroundColor:rgba(255,255,255,0.95);
+@bottomNavShiftBackgroundColor:rgba(255,255,255,0.95);
+@bottomNavUnselectedColor:#999;
+@bottomNavShiftUnselectedColor:#999;
+@import "../../node_modules/muse-ui/less/theme.less"; // 主题相关的样式
+.mu-raised-button.mu-raised-button-inverse{color:@grey10086;}
+.mu-dialog-body {
+    padding: 24px 24px 20px;
+    color: rgba(0,0,0,.6);
+}
+.mu-dialog-title {
+    color: rgba(0,0,0,.87);
+}
+.mu-text-field-input{
+    color: rgba(0,0,0,.87);
+}
+.mu-raised-button.replaceImg .mu-raised-button-label{
+      padding-left:20px;
+      padding-right:0;
+}
+
