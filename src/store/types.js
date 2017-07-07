@@ -19,9 +19,17 @@ export const FETCH_USER_LOGIN_INFO = 'fetchUserLoginInfo'
 export const FETCH_USER_DATA = 'fetchUserData'
 // 判断是有企业权限
 export const IS_COMPANY_USER = 'isCompanyUser'
+// 获得用户名
+export const GET_USER_NAME = 'getUserName'
+// 获得用户名
+export const GET_USER_PHONENUM = 'getUserPhoneNum'
 // noticePop
 // 设置notice显示
 export const SHOW_NOTICE = 'showNotice'
 // alert
 // 设置alert显示
 export const SHOW_ALERT = 'showAlert'
+// 获得用户id
+export const GET_USER_ID = 'getUserId'
+// 获得企业用户id
+export const GET_COMPANY_ID = 'getCompanyId'

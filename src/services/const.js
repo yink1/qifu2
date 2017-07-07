@@ -6,3 +6,4 @@
   export const COMPANY = 'company'
   export const COMPANYFOOTER = 'companyFooter'
   export const RECOMMEND = 'recommend'
+  export const UPLOAD = 'http://app2.thinkwit.com/'

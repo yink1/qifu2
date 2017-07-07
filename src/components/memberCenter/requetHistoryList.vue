@@ -5,105 +5,67 @@
         <h5>空空如也,去看看别的吧!</h5>
       </div>
       <div v-else>
-      <ul class="minHeightData" >
-      	<li class="clearfix requetHistoryList por" v-for="(item,i) in dataInfo.data">
-      	  <span class="fl fldate">{{item.startDate}}</span>
-      	  <p class="fl por porDescription" @mouseover="hover(i)" @mouseout="hoverLeave(i)">
-      	    {{item.description}}      	     
-      	  </p>
-      	  <span class="fr flStatus">
-      	      <i v-if="item.companyName.length > 0">由{{item.companyName}}公司跟进</i>
-      	      <i v-else>{{item.status}}</i>
-      	  </span>
-      	  <span class="poa poaDescription">{{item.description}}
-      	   
-      	  </span>
-      	</li>
-      </ul>
-      <div class="clearfix">      
-      <mu-pagination class="fr requetHistoryListPage" :total="dataInfo.count" :current="current" @pageChange="handleClick">
-      </mu-pagination>
-      </div>
+        <ul class="minHeightData" >
+        	<li class="clearfix requetHistoryList por" v-for="(item,i) in dataInfo.data">
+        	  <span class="fl fldate">{{item.startDate | lengthFilte}}</span>
+        	  <p class="fl por porDescription" @mouseover="hover(i)" @mouseout="hoverLeave(i)">
+        	    {{item.description}}      	     
+        	  </p>
+        	  <span class="fr flStatus">
+        	      <i v-if="item.companyName">由{{item.companyName}}公司跟进</i>
+        	      <i v-else>未答复</i>
+        	  </span>
+        	  <p class="poa poaDescription">{{item.description}}        	   
+        	  </p>
+        	</li>
+        </ul>
+        <div class="clearfix">      
+          <mu-pagination class="fr requetHistoryListPage" :pageSize='pageSize' v-if="pageShow" :total="dataInfo.count" :current="current" @pageChange="handleClick">
+          </mu-pagination>
+        </div>
       </div>
   </div>
 </template>
 <script>
+  import requirementService from '@/services/requirementService'
+  import {timeFormat} from '@/common/common'
   export default {
     data () {
       return {
         current: 1,
+        dataLength: 0,
+        pageShow: false,
+        pageSize: 10,
         dataInfo: {
-          'msg': 'ok',
-          'count': 20,
-          'data': [{
-            'description': '需求概要内容******',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提提出对象提出出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': ''
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          },
-          {
-            'description': '在多渠道布局的电商会收到多渠道的销售数据，这些数据是割裂的，且有可能会有重复性，该如何整合这些数据呢？全渠道零售和多渠道零售的区别具体在哪里 ?全渠道零售和多渠道零售的区别具体在哪里 ?',
-            'status': '已答复',
-            'startDate': '2016-01-16',
-            'companyName': '提出对象'
-          }
-          ]
+          data: []
         }
       }
     },
-    created () {},
+    filters: {
+      lengthFilte: timeFormat
+    },
+    created () {
+      this.get()
+    },
     mounted () {},
     computed: {},
     methods: {
+      get () {
+        requirementService.GetRequetHistoryList({page: this.current, pageNum: this.pageSize})
+        .then(response => {
+          this.dataInfo = response
+          console.log(8)
+          console.log(1, this.dataInfo)
+          if (response.count > this.pageSize) {
+            this.pageShow = true
+          } else {
+            this.pageShow = false
+          }
+        })
+      },
       handleClick (newIndex) {
+        this.current = newIndex
+        this.get()
       },
       hover (i) {
         let hover = document.getElementsByClassName('poaDescription')
@@ -119,6 +81,12 @@
         let hover = document.getElementsByClassName('poaDescription')[i]
         hover.style.display = 'none'
       }
+    },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.get()
+        // this.dataLenth = this.dataInfo.data.length
+      })
     }
   }
 </script>
@@ -161,6 +129,7 @@
     font-style:normal;
   }
   .porDescription{
+    text-indent: 10px;
     width:490px;
     color:#083C6F;
     margin:0 48px;
@@ -175,6 +144,7 @@
   }
   .poaDescription{
     width:510px;
+    word-break:break-all;
     padding:10px;
     top:54px;
     line-height: 20px;

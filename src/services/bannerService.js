@@ -9,7 +9,7 @@
     getBannerList (params) {
       console.log('params')
       console.log(params)
-      var bannerUrl = '/api/banner/bannerList?category=' + params.category
-      return axiosGet(bannerUrl)
+      // var bannerUrl = '/api/banner/bannerList?category=' + params.category
+      return axiosGet('/api/banner/bannerList', params)
     }
   }

@@ -4,16 +4,16 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
-  </div>
+</div>
 </template>
 
 <script>
-import memberInfo from '@/components/memberCenter/memberInfo'
-export default {
-  components: {
-    memberInfo: memberInfo
+  import memberInfo from '@/components/memberCenter/memberInfo'
+  export default {
+    components: {
+      memberInfo: memberInfo
+    }
   }
-}
 </script>
 
 <style>

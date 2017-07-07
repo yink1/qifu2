@@ -10,14 +10,14 @@
           <h3 class="fl">{{label.name}}</h3>
           <!-- value是点击下划线匹配符，需要在create方法中初始化activeTab这个值，设置为第一个标签的值 -->
           <ul class="clearfix fr ulList">
-          	<li class="fr" v-for="(chindTab,i) in label.child" :value="chindTab.id" :title="chindTab.name" :key="i" @click="handleTabChange(chindTab.id,i)" :class="{'liClass': i == firstBg}">
+          	<li class="fr" v-for="chindTab in label.child" :value="chindTab.id" :title="chindTab.name" @click="handleTabChange(chindTab.id)" :class="{'liClass': activeTab == chindTab.id}">
           	  <span >{{chindTab.name}}</span>
           	</li>
           </ul>
         </div>
-        <ul class="clearfix">
-          <li class="fl" >
-            <div class="fl imgData" v-for="service in servicesList.data">
+        <ul class="clearfix" v-if="servicesList.length>0">
+          <li class="fl"   v-for="service in servicesList" @click="jump(service.serviceId)">
+            <div class="fl imgData"  >
               <img :src="service.picUrl | thumbnail('215','106')"  alt="">
               <h4 class="txleft">{{service.serviceName}}</h4>
               <div class="imgFooter">
@@ -25,6 +25,12 @@
               </div>
             </div>
           </li>
+        </ul>
+        <ul class="clearfix imgDatapos" v-else>
+          <div class="blankCon">
+            <img src="../../../static/image/icon/blank.png"/>
+            <h5>空空如也,去看看别的吧!</h5>
+          </div>
         </ul>
       </div>
     </div>
@@ -37,29 +43,41 @@
     data () {
       return {
         firstBg: 0,
-        activeTab: '',
+        activeTab: 0,
         servicesList: []
       }
     },
     props: ['label'],
     created () {
-//  初始化时赋值
-      service.getServiceOfLabel(this.label.child[0].id)
+      console.log('this.serviceOfLabel.label')
+      console.log(this.label)
+      // 初始化activeTab这个值
+      this.activeTab = this.label.child[this.label.child.length - 1].id
+      console.log('this.activeTab')
+      console.log(this.activeTab)
+    },
+    watch: {
+      activeTab (val) {
+        service.getServiceOfLabel(val)
         .then(response => {
-          this.servicesList = response
+          if (response.data) {
+            console.log('response.data.sort(compare)')
+            console.log(response.data)
+            this.servicesList = response.data
+            console.log(22222, this.servicesList)
+          }
         })
-        // 初始化activeTab这个值
-      this.activeTab = this.label.child[0].id
+      }
     },
     methods: {
-      handleTabChange (value, i) {
-        this.firstBg = i
+      handleTabChange (value) {
         // 点击时同步修改activeTab这个值
         this.activeTab = value
-        service.getServiceOfLabel(value)
-        .then(response => {
-          this.servicesList = response
-        })
+      },
+      jump (val) {
+        console.log('jump val')
+        console.log(val)
+        this.$router.push('/serviceDetail/' + val)
       }
     },
     filters: {
@@ -78,7 +96,12 @@
   ul li {
     list-style: none;
   }
-  
+    .imgDatapos .blankCon img {
+    display: block;
+    width: 260px;
+    height: 200px;
+    margin: 60px auto 20px;
+}
   .labelDox {
     width: 1200px;
     margin: 0 auto;
@@ -219,7 +242,7 @@
     0 -3px 3px rgba(0,0,0,.117647), /*顶部阴影*/  
     0 3px 3px rgba(0,0,0,.117647); /*底边阴影*/ 
   }
-  .imgData:hover{
+  .labelDox .imgData:hover{
     cursor: pointer;
     transform: scale(1.02);
     box-shadow:-3px 0 3px rgba(0,0,0,.156863), /*左边阴影*/  

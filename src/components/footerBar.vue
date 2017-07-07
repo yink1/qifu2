@@ -19,7 +19,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.page1_footer{padding:14px; background:#2d2d2d; clear: both;}
+.page1_footer{padding:14px; background:#2d2d2d; clear: both;margin-top: 50px;}
 .page1_footer p{line-height: 26px; text-align: center; color:#f5f5f6;}
 .page1_footer p a{font-size:13px; color:#f5f5f6;}
 .page1_footer a:hover{text-decoration: underline;}

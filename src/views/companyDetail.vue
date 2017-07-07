@@ -1,64 +1,89 @@
 <template>
   <div id="companyDetail">
     <div class="detailNav por">
-      <img class="poa" src="../../static/image/detailImg.jpg" alt="" />
+     <banner class="poa detailBanner" :companyId='companyId'></banner>
       <div class="detailCon poa">
-        <requirement class="poa requirementPoa"></requirement>
-        <div class="hocoll_logo poa">
-          <div class="hoco_logoimg">
-            <img :src="detailService.imgurl"></div>
-          <p>已收藏</p>
-        </div>
+        <requirement class="poa requirementPoa" :companyId='companyId'></requirement>
+        <companyFavorite class="favoritePoa poa" :companyId='companyId' v-if='companyId'></companyFavorite>
       </div>
     </div>
     <div class="detailList">
-      <companyServiceList></companyServiceList>
-      <serviceLayout3></serviceLayout3>
-      <serviceLayout2></serviceLayout2>      
-      <serviceLayout4></serviceLayout4>
-      <serviceLayout5></serviceLayout5>
-      <docSummary></docSummary>
+      <companyServiceSummary :services='services'></companyServiceSummary>
+      <h4 v-if='docs.length > 0'>相关案例</h4>
+      <docSummary class="companyDetail" showData="false" :docItem="doc" v-for="doc in docs"></docSummary>
     </div>
     <div class="footerBar">
-      <img src="../../static/image/footerBar.jpg" alt="" />
+      <img :src="homePageBottom" alt="" />
     </div>
   </div>
 </template>
 <script>
+  import banner from '@/components/shared/banner'
   import requirement from '@/components/shared/requirement'
-  import companyServiceList from '@/components/companyCenter/companyServiceList'
-  import serviceLayout2 from '@/components/companyCenter/serviceLayout2'
-  import serviceLayout3 from '@/components/companyCenter/serviceLayout3'
-  import serviceLayout4 from '@/components/companyCenter/serviceLayout4'
-  import serviceLayout5 from '@/components/companyCenter/serviceLayout5'
+  import companyFavorite from '@/components/shared/companyFavorite'
+  import companyServiceSummary from '@/components/company/companyServiceSummary'
   import docSummary from '@/components/company/docSummary'
+  import companyservice from '@/services/companyService'
   export default {
     data () {
       return {
-        detailService: {
-          imgurl: '../../static/image/temp/friend01.jpg',
-          name: '丁香园',
-          favourite: 0,
-          intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'
-        }
+        companyId: '',
+        homePageBottom: '',
+        docs: {},
+        services: {}
       }
     },
-    created () {},
-    mounted () {},
+    created () {
+      this.get({ Id: this.$route.params.companyId })
+    },
+    mounted () {
+    },
     computed: {},
-    methods: {},
+    methods: {
+      get (params) {
+        companyservice.getHomepageInfo(params)
+         // 接收请求返回值
+        .then(response => {
+          this.homepage = response
+          this.companyId = this.homepage.data.companyId
+          this.homePageBottom = this.homepage.data.homePageBottom
+          this.docs = this.homepage.data.docs
+          this.services = this.homepage.data.services
+        })
+      }
+    },
+    beforeRouteEnter (to, from, next) {
+      // 这里判断是否重复打开的同一服务页
+      next(vm => {
+        if (to.params.companyId !== undefined) {
+          vm.companyId = to.params.companyId
+          vm.get({ Id: to.params.companyId })
+        }
+      })
+    },
     components: {
       requirement,
-      companyServiceList,
-      serviceLayout2,
-      serviceLayout3,
-      serviceLayout4,
-      serviceLayout5,
-      docSummary
+      companyFavorite,
+      companyServiceSummary,
+      docSummary,
+      banner
     }
   }
 </script>
 <style>
+.companyFavorite.favoritePoa{
+  left:1020px;
+  top:40px;
+  z-index:122222;
+}
+  .detailList h4{
+    font-size: 18px;
+    color:#083C6F;
+    height:50px;
+    line-height: 50px;
+    padding-left:30px;
+    border-bottom:1px solid #ccc;
+  }
   .demo-menu {
   display: inline-block;
   margin: 16px 32px 16px 0;
@@ -68,6 +93,18 @@
   .detailNav{
     width:100%;
     height:380px;
+  }
+  .detailBanner{
+    width:100%;
+    height:380px;
+  }
+  .detailBanner .home_banner{
+    width:100%;
+    height:380px;
+  }
+  .detailBanner .home_banner .swiper-slide,.detailBanner .home_banner .swiper-slide img{
+    width:100%;
+    height: 100%;
   }
   .requirementPoa{
     left:100px;
@@ -99,6 +136,12 @@
   }
   .intruduce h4{
     text-align: center;
+  }
+  .companyDetail .datpage_right {
+    width: 700px;
+  }
+  .companyDetail .datpage_left {
+    margin-left: 20px;
   }
   #companyDetail .hocoll_logo {
     right:0px;
@@ -141,8 +184,8 @@
       margin:0 auto;
       padding-bottom:40px;
     }
-    .detailList{
-      width:1000px;
+    #companyDetail .detailList{
+      width:1002px;
       margin:0 auto;
     }
     .detailList .user_funbtn{
@@ -151,7 +194,12 @@
     .detailList .pic_edit{
       display: none;
     }
+    .footerBar{
+      margin-top:20px;
+      margin-bottom:-20px;
+    }
     .footerBar img{
+      display:block;
       width:100%;
       height:200px;
     }

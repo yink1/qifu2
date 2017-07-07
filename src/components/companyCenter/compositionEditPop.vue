@@ -1,20 +1,26 @@
 <template>
-  <div style="display: inline-block;">
-    <mu-raised-button label="布局" @click="open"/>
-    <mu-dialog :open="dialog" @close="close">
-      <h3 class="dialog_title">重新选择一个版式</h3>
-      <ul class="composition">
-        <li v-for="pic in img" @click='select($event)'>
-          <img :src="pic.image"/>
-          <img src="../../../static/image/selected.png" class="selected_layout"/>
-        </li>
-      </ul>
-      <mu-flat-button slot="actions" @click="close" primary label="取消"/>
-      <mu-flat-button slot="actions" primary @click="close" label="保存"/>
-    </mu-dialog>
+  <div style="display: inline-block;" class='edit_pop'>
+    <!--<mu-raised-button label="布局" @click="open"/>-->
+    <div class="requirement_box" v-if="dialog"></div>
+    <div class="dialog" v-if="dialog">
+      <div class="require_content"> 
+        <h3 class="dialog_title">重新选择一个版式</h3>
+        <ul class="composition">
+          <li v-for="pic,index in img" @click='select($event, index)'>
+            <img :src="pic.image"/>
+            <img src="../../../static/image/selected.png" class="selected_layout"/>
+          </li>
+        </ul>
+        <div class='btn_box'>
+          <mu-flat-button slot="actions" @click="close" primary label="取消"/>
+          <mu-flat-button slot="actions" primary @click="saveLayout" label="保存"/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import $ from 'jquery'
 export default {
   data () {
     return {
@@ -29,23 +35,38 @@ export default {
         image: '../../../static/image/format2.png'
       }, {
         image: '../../../static/image/format1.png'
-      }]
+      }],
+      serviceType: 1
     }
   },
   methods: {
     open () {
+      $('.composition li').removeClass('layout_active')
       this.dialog = true
+      document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+      document.getElementsByTagName('html')[0].style.overflow = 'hidden'
     },
     close () {
       this.dialog = false
+      document.getElementsByTagName('body')[0].style.overflow = 'auto'
+      document.getElementsByTagName('html')[0].style.overflow = 'auto'
     },
-    select (e) {
+    select (e, index) {
+      $('.composition li').removeClass('layout_active')
       e.currentTarget.classList.add('layout_active')
+      this.serviceType = index + 1
+    },
+    saveLayout () {
+      this.$emit('saveLayout', this.serviceType)
+      this.close()
     }
   }
 }
 </script>
 <style>
+  .edit_pop .require_content{
+   padding: 24px 24px 20px;
+  }
   .composition {
     margin:20px;
   }

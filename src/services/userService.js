@@ -16,12 +16,8 @@ export default {
   },
 // 获取短信验证码 userService.getSmsCode
   GetSmsCode (params) {
-    return axiosGet('/api/Code/SmsCode?PhoneNum=' + params.PhoneNum, params)
+    return axiosGet('/api/Code/SmsCode', params)
   },
-// 短信验证码 userService.smslogin  http://api.thinkwit.com/token grant_type=client_credentials&client_id=SMS&client_secret=15026736556_9497
-// Smslogin (params) {
-//  return axiosGet('/token' + params.PhoneNum, params)
-// },
   /**
    * 用户注册
    */
@@ -37,62 +33,60 @@ export default {
 //    userId: id
 //  })
 // },
-  UserInfo () {
-    return axiosGet('/api/Account/UserInfo')
-  },
   // 获得用户信息  暂无返回值 userService.getMemberInfo
   GetMemberInfo () {
-    return ''
+    return axiosGet('/api/Account/UserInfo')
+  },
+  // 修改用户信息
+  EditMemberInfo (params) {
+    return axiosPost('/api/Account/editUserInfo', params)
+  },
+  // 修改用户密码
+  changePassword (params) {
+    return axiosPost('/api/Account/setPassword', params)
   },
   // 获得用户最近浏览的服务列表
-  GetServiceHistoryList () {
-    return {
-      'msg': 'ok',
-      'count': 20,
-      'data': [
-        {
-          'companyId': '1012',
-          'companyName': '思齐',
-          'serviceId': '12345',
-          'picUrl': '服务图片',
-          'serviceName': '定制服务',
-          'introduce': '测试服务',
-          'favoriteFlag': true
-        },
-        {
-          'companyId': '1013',
-          'companyName': '行睿',
-          'serviceId': '12345423',
-          'picUrl': '服务图片',
-          'serviceName': '专属定制服务',
-          'introduce': '测试专属服务',
-          'favoriteFlag': true
-        }
-      ]
-    }
+  GetServiceHistoryList (params) {
+//  return {
+//    'msg': 'ok',
+//    'count': 20,
+//    'data': [
+//      {
+//        'companyId': '1012',
+//        'companyName': '思齐',
+//        'serviceId': '12345',
+//        'picUrl': 'http://cdn.siqiquan.org/%E5%9B%BE%E7%89%872.jpg',
+//        'serviceName': '定制服务',
+//        'introduce': '测试服务',
+//        'favoriteFlag': true
+//      },
+//      {
+//        'companyId': '1013',
+//        'companyName': '行睿',
+//        'serviceId': '12345423',
+//        'picUrl': 'http://cdn.siqiquan.org/%E5%9B%BE%E7%89%872.jpg',
+//        'serviceName': '专属定制服务',
+//        'introduce': '测试专属服务',
+//        'favoriteFlag': true
+//      }
+//    ]
+//  }
+    var getServiceHistoryListUrl = 'api/userTrace/serviceHistoryList'
+    return axiosGet(getServiceHistoryListUrl, params)
   },
   //  userService.getDocHistoryList  获得用户最近浏览的文档列表
   GetDocHistoryList (params) {
-    return {
-      'msg': 'ok',
-      'count': 20,
-      'data': [
-        {
-          'id': '1234',
-          'title': '测试最近浏览文档',
-          'documentId': '9876',
-          'format': 'pdf',
-          'time': '2017-06-03 10:10:10'
-        },
-        {
-          'id': '1357',
-          'title': '测试最近浏览文档1',
-          'documentId': '84628',
-          'format': 'pdf',
-          'time': '2017-06-03 12:32:10'
-        }
-      ]
-    }
+    var getDocHistoryListUrl = 'api/userTrace/docHistoryList'
+    return axiosGet(getDocHistoryListUrl, params)
+  },
+  PostAddHistory (params) {
+    var postAddHistoryUrl = 'api/userTrace/addHistory'
+    return axiosPost(postAddHistoryUrl, params)
+  },
+  /**
+ * 用户登录
+ */
+  logout () {
+    return axiosPost('/api/account/logout', {})
   }
-  // userService.getSmsCode  未写
 }

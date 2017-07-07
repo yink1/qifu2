@@ -1,50 +1,50 @@
 <template>
   <div id='login'>
-    <div class="loginConent por">
-      <div class="poa loginBox">
-          <p class="loginButton">
-            <span :class="{active: isActive}" @click="changeBoxPhone">手机动态登录</span>
+    <div class='loginConent por'>
+      <div class='poa loginBox'>
+          <p class='loginButton'>
+            <span :class='{active: isActive}' @click='changeBoxPhone'>手机动态登录</span>
             <i>|</i>
-            <span :class="{active: !isActive}" @click="changeBoxPass">账号密码登录</span>
+            <span :class='{active: !isActive}' @click='changeBoxPass'>账号密码登录</span>
           </p>
-          <form class="loginInfo" action="" v-if="loginPassword">
+          <form class='loginInfo' action='' v-if='loginType'>
             <p>
-              <img class="loginInfoImg" src="../../static/image/icon/phoneIcon.png"/>
-              <mu-text-field hintText="请输入您的手机" class="loginInfofield" :errorText="errorOfPhoneNumber" v-model="userLogin.phoneNumber" @blur="$v.userLogin.phoneNumber.$touch()"/><br/>
+              <img class='loginInfoImg' src='../../static/image/icon/phoneIcon.png'/>
+              <mu-text-field hintText='请输入您的手机' class='loginInfofield' :errorText='errorOfPhoneNumber' v-model='userLogin.phoneNumber' @input='$v.userLogin.phoneNumber.$touch()'/><br/>
             </p>
             <p>
-              <img class="loginInfoImg" src="../../static/image/icon/password.png"/>
-              <mu-text-field hintText="密码" class="loginInfofield" type="password" :errorText="errorOfPassWord" v-model="userLogin.password" @blur="$v.userLogin.password.$touch()"/><br/>
+              <img class='loginInfoImg' src='../../static/image/icon/password.png'/>
+              <mu-text-field hintText='密码' class='loginInfofield' type='password' :errorText='errorOfPassWord' v-model='userLogin.password' @blur='$v.userLogin.password.$touch()'/><br/>
             </p>
-            
-              <mu-raised-button label="登录" @click="login" class="demo-raised-button mainButton" fullWidth primary/>
-            
+              <mu-raised-button label='登录' @click='login' class='demo-raised-button mainButton' fullWidth primary/>
           </form>
-          <form class="loginInfo" action="" v-else>
+          <form class='loginInfo' action='' v-else>
             <p>
-              <img class="loginInfoImg" src="../../static/image/icon/phoneIcon.png"/>
-              <mu-text-field hintText="请输入您的手机" class="loginInfofield" :errorText="errorOfPhoneNumber" v-model="userLogin.phoneNumber" @blur="$v.userLogin.phoneNumber.$touch()"/><br/>
+              <img class='loginInfoImg' src='../../static/image/icon/phoneIcon.png'/>
+              <mu-text-field hintText='请输入您的手机' class='loginInfofield' :errorText='errorOfPhoneNumber' v-model='userLogin.phoneNumber' @blur='$v.userLogin.phoneNumber.$touch()'/><br/>
             </p>
-            <p class="por">
-              <img class="loginInfoImg" src="../../static/image/icon/checkCodeIcon.png"/>
-              <mu-text-field class="checkInfo" hintText="请输入图形验证码" :errorText="errorOfImgCode" v-model="imgCodeVal" @blur="$v.imgCodeVal.$touch()"/><br/>
-              <img class="poa poaImg" :src="loginCheck.data.url"/>
+            <p class='por' v-if="isImgCodeShow">
+              <img class='loginInfoImg' src='../../static/image/icon/checkCodeIcon.png'/>
+              <mu-text-field class='checkInfo' hintText='请输入图形验证码' :errorText='errorOfImgCode' v-model='userLogin.imgCode' @blur='$v.userLogin.imgCode.$touch()'/><br/>
+              <img class='poa poaImg' :src='imgVlidateUrl' @click='getImgVlidate'/>
             </p>
-            <p class="por">
-              <img class="loginInfoImg" src="../../static/image/icon/checkImg.png"/>
-              <mu-text-field class="checkInfo" hintText="请输入验证码" v-model="smsCodeVal"/><br/>
-              <span class="poa poaImg">
-                <mu-raised-button :label="labelTitle" class="demo-raised-button"  :disabled="isActiveButton" :primary="!isActiveButton" @click="changDisable"/>
+            <p class='por'>
+              <img class='loginInfoImg' src='../../static/image/icon/checkImg.png'/>
+              <mu-text-field class='checkInfo' hintText='请输入验证码' v-model='userLogin.smsCode'/><br/>
+              <span class='poa poaImg'>
+                <mu-raised-button :label='labelTitle' class='demo-raised-button'  :disabled='isActiveButton' :primary='!isActiveButton' @click='changDisable'/>
               </span>
             </p>
-              <mu-raised-button label="登录 / 注册" @click="loginWithSms" class="demo-raised-button mainButton" fullWidth primary/>
+              <mu-raised-button label='登录 / 注册' @click='loginWithSms' class='demo-raised-button mainButton' fullWidth primary/>
           </form>
-          <p class="keepLogin clearfix">
-            <mu-checkbox label="保持我的登录状态" class="demo-checkbox fl"/>
-            <span class="fl forget" v-show="loginPassword">忘记密码？</span>
-            <span class="fr"><router-link to="/register">立即注册</router-link></span>
+          <p class='keepLogin clearfix'>
+            <mu-checkbox label='保持我的登录状态' nativeValue="保持我的登录状态" v-model="list" @change="changState" class='demo-checkbox fl'/>
+            <span class='fl forget' v-show='loginType' @click="changeTab">
+                                    忘记密码？
+           </span>
+            <span class='fr'><router-link to='/register'>立即注册</router-link></span>
           </p>
-          <p class="loginNote">
+          <p class='loginNote'>
                               温馨提示：未注册企服圈账号的手机号，登录时将自动注册，且代表您已同意
              <span>《企服圈用户协议》</span>
           </p>
@@ -53,11 +53,11 @@
   </div>
 </template>
 <script>
-  import $ from 'jquery'
-  import userService from '@/services/userService'
-  import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
   import { mapMutations } from 'vuex'
+  import userService from '@/services/userService'
+  import { required, minLength, maxLength, numeric, sameAs } from 'vuelidate/lib/validators'
   import * as types from '@/store/types'
+  import {showNotice} from '@/common/noticeAlertFun'
   export default {
     data () {
       return {
@@ -65,16 +65,21 @@
         labelTitle: '发送验证码',
         isActive: false,
         isActiveButton: false,
-        inputErrorText: '',
-        inputErrorPass: '',
-        inputErrorImgCode: '',
-        imgCodeVal: '',
-        smsCodeVal: '',
-        loginPassword: true,
+        loginType: true,
+        imgVlidateUrl: '',
         loginCheck: {},
+//      是否显示图形验证码  第一次短信登录不显示图形验证码    之后显示
+        isImgCodeShow: false,
+        count: 0,
+        list: ['保持我的登录状态'],
         userLogin: {
           phoneNumber: '',
-          password: ''
+          password: '',
+          // 网络请求获得
+          imgVlidateCode: '',
+          // 用户输入的图片验证码
+          imgCode: '',
+          smsCode: ''
         }
       }
     },
@@ -89,94 +94,101 @@
         password: {
           required,
           minLength: minLength(6)
+        },
+        imgCode: {
+          required,
+          numeric,
+          maxLength: maxLength(4),
+          minLength: minLength(4),
+          sameAsImgCode: sameAs('imgVlidateCode')
         }
-      },
-      imgCodeVal: {
-        required,
-        numeric,
-        maxLength: maxLength(4),
-        minLength: minLength(4)
       }
     },
     mounted () {
-      $('#login').css('height', localStorage.bodyHeight - 225 + 'px')
+    //  $('#login').css('height', localStorage.bodyHeight - 225 + 'px')
+      var heightCss = localStorage.bodyHeight - 200
+      document.getElementById('login').style.height = heightCss + 'px'
+      console.log(heightCss)
       // 调用获取图片验证码请求
-      this.getImgVlidate()
+//    this.getImgVlidate()
     },
     created () {},
     computed: {
       errorOfPhoneNumber () {
-        if (!this.$v.userLogin.phoneNumber.required) {
-          return '请输入手机号'
-        }
-        if (!this.$v.userLogin.phoneNumber.numeric) {
-          return '手机号必须全为数字'
-        }
-        if (!this.$v.userLogin.phoneNumber.minLength) {
-          return '请输入11位字符手机号'
-        }
-        if (!this.$v.userLogin.phoneNumber.maxLength) {
+        if (!this.$v.userLogin.phoneNumber.required || !this.$v.userLogin.phoneNumber.numeric || !this.$v.userLogin.phoneNumber.minLength || !this.$v.userLogin.phoneNumber.maxLength) {
           return '请输入11位字符手机号'
         }
         return ''
       },
       errorOfPassWord () {
-        if (!this.$v.userLogin.password.required) {
-          return '请输入密码'
-        }
-        if (!this.$v.userLogin.password.minLength) {
+        if (!this.$v.userLogin.password.required || !this.$v.userLogin.password.minLength) {
           return '请输入6个字符以上的密码'
         }
         return ''
       },
       errorOfImgCode () {
-        if (!this.$v.imgCodeVal.required) {
-          return '请输入图片验证码'
-        }
-        if (!this.$v.imgCodeVal.numeric) {
-          return '图片验证码必须全为数字'
-        }
-        if (!this.$v.imgCodeVal.minLength) {
+        if (!this.$v.userLogin.imgCode.required || !this.$v.userLogin.imgCode.numeric || !this.$v.userLogin.imgCode.minLength || !this.$v.userLogin.imgCode.maxLength) {
           return '请输入4位字符图片验证码'
         }
-        if (!this.$v.imgCodeVal.maxLength) {
-          return '请输入4位字符图片验证码'
-        }
-        if (this.imgCodeVal !== this.loginCheck.data.code) {
+        if (this.userLogin.imgCode !== this.userLogin.imgVlidateCode) {
           return '请输入正确的图片验证码'
         }
         return ''
       }
     },
     methods: {
+      changeTab () {
+        this.isActive = true
+        this.loginType = false
+      },
+      changState () {
+        if (this.list.length > 0) {
+//          return ''
+        } else {
+//        this.userLogin = {
+//          phoneNumber: '',
+//          password: '',
+//          imgVlidateCode: '',
+//          // 用户输入的图片验证码
+//          imgCode: '',
+//          smsCode: ''
+//        }
+//        this.setUserLoginInfo(this.userLogin)
+        }
+      },
       getImgVlidate () {
               // :获取图片验证码
         userService.GetImageCode({'username': this.userLogin.phoneNumber})
           .then(response => {
-            this.loginCheck = response
-            // 在图形验证码前面拼接 ‘http：//’
-            this.loginCheck.data.url = 'http://' + this.loginCheck.data.url
+            this.imgVlidateUrl = response.data.url
+            this.userLogin.imgVlidateCode = response.data.code
           })
       },
       changeBoxPhone () {
         this.isActive = true
-        this.loginPassword = false
+        this.loginType = false
         this.isActiveButton = false
         clearInterval(this.timer)
         this.labelTitle = '发送验证码'
       },
       changeBoxPass () {
         this.isActive = false
-        this.loginPassword = true
+        this.loginType = true
         this.isActiveButton = false
       },
       changDisable () {
-        if (this.imgCodeVal !== this.loginCheck.data.code) {
-          return ''
+        if (this.isImgCodeShow) {
+          if (this.$v.userLogin.phoneNumber.$invalid || this.$v.userLogin.imgCode.$invalid) {
+            return ''
+          }
+        } else {
+          if (this.$v.userLogin.phoneNumber.$invalid) {
+            return ''
+          }
         }
-        if (this.userLogin.phoneNumber.length !== 11) {
-          return ''
-        }
+//      if (this.isImgCodeShow || this.$v.userLogin.phoneNumber.$invalid || this.$v.userLogin.imgCode.$invalid) {
+//        return ''
+//      }
         var _this = this
         clearInterval(_this.timer)
         this.isActiveButton = true
@@ -192,18 +204,18 @@
             sec--
           }
         }, 1000)
-        userService.GetSmsCode({'PhoneNum': this.userLogin.phoneNumber})
+        userService.GetSmsCode({'PhoneNum': this.userLogin.phoneNumber, 'action': 'login'})
         .then(response => {
           console.log('Smslogin response')
           console.log(response)
           if (response.data.isMember === false) {
-            alert('该手机号尚未注册，前往注册')
+            showNotice('该手机号尚未注册，前往注册')
             this.$router.push('/register')
           }
         })
       },
       login () {
-        if (this.userLogin.phoneNumber.length !== 11 || this.userLogin.password.length < 6) {
+        if (this.$v.userLogin.phoneNumber.$invalid || this.$v.userLogin.password.$invalid) {
           return ''
         }
 //      grant_type=password&username=15026736556&password=123456
@@ -213,9 +225,11 @@
             console.log('Login response')
             console.log(response)
             // todo:获取用户信息
-            userService.UserInfo()
+            userService.GetMemberInfo()
               .then(response => {
-                this.SetUserData(response)
+                this.SetUserData(response.data)
+                console.log('userService.UserInfo')
+                console.log(response)
                 // 获取地址栏参数
                 if (this.$route.query.redirect === undefined) {
                   this.$router.push('/')
@@ -226,31 +240,38 @@
           })
       },
       loginWithSms () {
-        if (this.userLogin.phoneNumber.length !== 11 || this.userLogin.password.length < 6) {
-          return ''
-        }
-        if (this.imgCodeVal !== this.loginCheck.data.code) {
-          return ''
+        if (this.isImgCodeShow) {
+          if (this.$v.userLogin.phoneNumber.$invalid || this.$v.userLogin.imgCode.$invalid) {
+            return ''
+          }
+        } else {
+          if (this.$v.userLogin.phoneNumber.$invalid) {
+            return ''
+          }
         }
 //      grant_type=password&username=15026736556&password=0414&client_id=SMS
-        userService.Login({'grant_type': 'password', 'username': this.userLogin.phoneNumber, 'password': this.smsCodeVal, 'client_id': 'SMS'})
+        userService.Login({'grant_type': 'password', 'username': this.userLogin.phoneNumber, 'password': this.userLogin.smsCode, 'client_id': 'SMS'})
           .then(response => {
             this.setUserLoginInfo(response)
-            console.log('Login response')
-            console.log(response)
+            console.log('Login response666')
             // todo:获取用户信息
-            userService.UserInfo()
+            userService.GetMemberInfo()
               .then(response => {
-                this.SetUserData(response)
+                this.SetUserData(response.data)
+                console.log('userService.UserInfo667')
+                console.log(response)
                 // 获取地址栏参数
                 if (this.$route.query.redirect === undefined) {
                   this.$router.push('/')
+                  console.log('userService.UserInfo668')
                 } else {
                   this.$router.push(this.$route.query.redirect)
+                  console.log('userService.UserInfo669')
                 }
               })
           })
-                            // 调用获取图片验证码请求
+        this.isImgCodeShow = true
+        // 调用获取图片验证码请求
         this.getImgVlidate()
       },
       ...mapMutations({
@@ -265,6 +286,8 @@
     width:100%;
     padding-bottom:40px;
     background:#68a7b9;
+    min-height: 725px;
+    margin-bottom:-50px;
   }
   .mainButton{
     margin-top:10px!important;
@@ -299,7 +322,7 @@
     cursor:pointer
   }
   .loginButton i{
-    margin:0 40px;
+    margin:0 35px;
   }
   .loginNote{
     font-size: 12px;
@@ -333,7 +356,7 @@
     margin-right:6px!important;
   }
   .mu-text-field.checkInfo{
-    width:136px!important;
+    width:139px!important;
     margin-left: 32px;
       }
    .poaImg{

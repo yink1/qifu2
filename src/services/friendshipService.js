@@ -1,7 +1,8 @@
   import { axiosGet } from '@/api/api'
   export default {
     getLinkList (params) {
-      var friendShipUrl = '/banner/bannerList?category='
-      return axiosGet(friendShipUrl)
+//    每页个数确定
+      var friendShipUrl = 'api/friendship/LinkList'
+      return axiosGet(friendShipUrl, params)
     }
   }

@@ -32,7 +32,7 @@
   }
 </script>
 <style>
-#companyCenter{width:1200px;padding:0 0 20px;margin:0 auto;}
+#companyCenter{width:1200px;padding:0 ;margin:0 auto;}
 /* 清除浮 动*/
   
   .clearfix {
@@ -57,5 +57,5 @@
   .fr {
     float: right;
   }
-  .homepageBox{width:940px;padding:0 0 20px;}
+  .homepageBox{width:940px;padding:0;}
 </style>

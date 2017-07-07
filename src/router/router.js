@@ -33,21 +33,21 @@ import uploadDocList from '@/components/companyCenter/uploadDocList'
 import companyCenterComp from '@/components/companyCenter/companyCenter'
 import companyInfo from '@/components/companyCenter/companyInfo'
 import docUploadManagment from '@/views/docUploadManagment'
-import upload from '@/views/MultiUpload'
-
+import companyRegisterStep1 from '@/views/companyRegisterStep1'
+import companyRegisterStep2 from '@/views/companyRegisterStep2'
+import companyRegisterStep3 from '@/views/companyRegisterStep3'
+import docManagment from '@/components/companyCenter/docUploadManagment'
+import memberDocUpload from '@/components/memberCenter/memberDocUpload'
+import store from '@/store/store'
 Vue.use(Router)
 
 const router = new Router({
+  // mode: 'history',
   routes: [
     {
       path: '/',
       name: 'index',
       component: index
-    },
-    {
-      path: '/upload',
-      name: 'upload',
-      component: upload
     },
     {
       path: '/login',
@@ -60,9 +60,27 @@ const router = new Router({
       component: register
     },
     {
-      path: '/docList',
+      path: '/docList/:docName?/:refresh?',
       name: 'docList',
       component: docList
+    },
+    {
+      path: '/companyRegisterStep1',
+      name: 'companyRegisterStep1',
+      component: companyRegisterStep1,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/companyRegisterStep2',
+      name: 'companyRegisterStep2',
+      component: companyRegisterStep2,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/companyRegisterStep3',
+      name: 'companyRegisterStep3',
+      component: companyRegisterStep3,
+      meta: { requiresAuth: true }
     },
     {
       path: '/companyList',
@@ -70,27 +88,27 @@ const router = new Router({
       component: companyList
     },
     {
-      path: '/companyDetail',
+      path: '/companyDetail/:companyId',
       name: 'companyDetail',
       component: companyDetail
     },
     {
-      path: '/docDetail',
+      path: '/docDetail/:docId',
       name: 'docDetail',
       component: docDetail
     },
     {
-      path: '/service',
+      path: '/service/:labelId?/:childLabelId?/:serviceName?/:refresh?',
       name: 'service',
       component: service
     },
     {
-      path: '/serviceDetail',
+      path: '/serviceDetail/:id',
       name: 'serviceDetail',
       component: serviceDetail
     },
     {
-      path: '/docUploadManagment',
+      path: '/docUploadManagment/:id?',
       name: 'docUploadManagment',
       component: docUploadManagment
     },
@@ -105,13 +123,20 @@ const router = new Router({
           meta: { requiresCompRole: true }
         },
         {
-          path: 'serviceManagment',
+          path: 'serviceManagment/:id?',
           component: serviceManagment,
+          name: 'serviceManagment',
           meta: { requiresCompRole: true }
         },
         {
           path: 'companyInfo',
           component: companyInfo,
+          meta: { requiresCompRole: true }
+        },
+        {
+          path: 'docManagment/:docId?',
+          name: 'docManagment',
+          component: docManagment,
           meta: { requiresCompRole: true }
         },
         {
@@ -130,7 +155,8 @@ const router = new Router({
             },
             {
               path: 'uploadDocList',
-              component: uploadDocList
+              component: uploadDocList,
+              meta: { requiresCompRole: true }
             }
           ]
         }
@@ -144,25 +170,34 @@ const router = new Router({
         {
           path: 'history',
           component: history,
-          name: 'history',
           children: [
             {
               path: '/',
-              component: requetHistoryList
+              component: requetHistoryList,
+              meta: { requiresAuth: true }
             },
             {
               path: 'requetHistoryList',
-              component: requetHistoryList
+              component: requetHistoryList,
+              meta: { requiresAuth: true }
             },
             {
               path: 'serviceHistoryList',
-              component: serviceHistoryList
+              component: serviceHistoryList,
+              meta: { requiresAuth: true }
             },
             {
               path: 'docHistoryList',
-              component: docHistoryList
+              component: docHistoryList,
+              meta: { requiresAuth: true }
             }
           ]
+        },
+        {
+          path: 'memberDocUpload/:docId?',
+          name: 'memberDocUpload',
+          component: memberDocUpload,
+          meta: { requiresAuth: true }
         },
         {
           path: 'memberCenter',
@@ -170,11 +205,13 @@ const router = new Router({
           children: [
             {
               path: 'recharge',
-              component: recharge
+              component: recharge,
+              meta: { requiresAuth: true }
             },
             {
               path: 'pointHistory',
-              component: pointHistory
+              component: pointHistory,
+              meta: { requiresAuth: true }
             }
           ]
         },
@@ -182,6 +219,11 @@ const router = new Router({
           path: 'memberFavorites',
           component: memberFavorites,
           children: [
+            {
+              path: '/',
+              component: favoriteCompanyList,
+              meta: { requiresAuth: true }
+            },
             {
               path: 'favoriteCompanyList',
               component: favoriteCompanyList,
@@ -204,6 +246,11 @@ const router = new Router({
           component: memberDoc,
           children: [
             {
+              path: '/',
+              component: docUploadList,
+              meta: { requiresAuth: true }
+            },
+            {
               path: 'docUploadList',
               component: docUploadList,
               meta: { requiresAuth: true }
@@ -218,6 +265,33 @@ const router = new Router({
       ]
     }
   ]
+})
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!store.getters.getUserLogin) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else if (to.matched.some(record => record.meta.requiresCompRole)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!store.getters.getUserLogin || !store.getters.isCompanyUser) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // 确保一定要调用 next()
+  }
 })
 
 export default router

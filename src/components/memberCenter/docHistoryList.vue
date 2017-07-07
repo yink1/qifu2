@@ -10,109 +10,67 @@
           <p class="fl">资料名</p>
           <span class="fr fldate">下载日期</span>
         </li>
-        <li class='clearfix requetHistoryList por' v-for='(item,i) in dataInfo.data'>
+        <li class='clearfix requetHistoryList requetHistoryListLi por' v-for='(item,i) in dataInfo.data' @click="jump(item.id)">
           <p class="fl">
-            <img src="../../../static/image/pdf.png" alt="" />
+            <img v-if='item.format.indexOf("pdf") > -1' src="../../../static/image/pdf.png" alt="" />
+            <img v-if='item.format.indexOf("doc") > -1' src="../../../static/image/word.png" alt="" />
+            <img v-if='item.format.indexOf("txt") > -1' src="../../../static/image/txt_icon.png" alt="" />
+            <img v-if='item.format.indexOf("xls") > -1' src="../../../static/image/excel.png" alt="" />
+            <img v-if='item.format.indexOf("ppt") > -1' src="../../../static/image/ppt_icon.png" alt="" />
             {{item.title}}
           </p>
-          <span class="fr fldate">{{item.time}}</span>
+          <span class="fr fldate">{{item.time| lengthFilte}}</span>
         </li>
       </ul>
       <div class='clearfix'>      
-      <mu-pagination class='fr requetHistoryListPage' :total='dataInfo.count' :current='current' @pageChange='handleClick'>
+      <mu-pagination class='fr requetHistoryListPage' :pageSize='pageSize' :total='dataInfo.count' v-if='pageShow' :current='current' @pageChange='handleClick'>
       </mu-pagination>
       </div>
       </div>
   </div>
 </template>
 <script>
+  import userService from '@/services/userService'
+  import {timeFormat} from '@/common/common'
   export default {
     data () {
       return {
         current: 1,
+        pageShow: false,
+        pageSize: 10,
         dataInfo: {
-          'msg': 'ok',
-          'count': 20,
-          'data': [
-            {
-              'id': '文档id',
-              'title': '《MDT从能力到实力的思考——北京大学第三医院 金昌晓》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '昨天'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '2016-10-29'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '前天'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '2016-10-01'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '前天'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '前天'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '前天'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '前天'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '前天'
-            },
-            {
-              'id': '文档id',
-              'title': '《患者临床信息在院内的充分共享——复旦大学附属华山医院信息中心 黄虹》',
-              'documentId': '百度文库id',
-              'format': '文档格式,参考Format定义',
-              'time': '前天'
-            }
-          ]
+          data: []
         }
       }
     },
-    created () {},
+    created () {
+      this.get()
+    },
     mounted () {},
     computed: {},
+    filters: {
+      lengthFilte: timeFormat
+    },
     methods: {
+      jump (val) {
+        this.$router.push('/docDetail/' + val)
+      },
+      get () {
+        userService.GetDocHistoryList({page: this.current, pageNum: this.pageSize})
+        .then(response => {
+          this.dataInfo = response
+          console.log(10)
+          console.log(1, this.dataInfo)
+          if (response.count > this.pageSize) {
+            this.pageShow = true
+          } else {
+            this.pageShow = false
+          }
+        })
+      },
       handleClick (newIndex) {
+        this.current = newIndex
+        this.get()
       },
       hover (i) {
         let hover = document.getElementsByClassName('poaDescription')
@@ -128,6 +86,11 @@
         let hover = document.getElementsByClassName('poaDescription')[i]
         hover.style.display = 'none'
       }
+    },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.get()
+      })
     }
   }
 </script>
@@ -147,5 +110,13 @@
 }
 .docHistory p img{
   vertical-align: middle;
+  margin-right:6px;
+}
+.requetHistoryListLi:hover{
+  background:#e6e6e6;
+  cursor:pointer;
+}
+.minHeightData li:last-child{
+  border-bottom:none;
 }
 </style>

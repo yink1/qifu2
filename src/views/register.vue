@@ -12,12 +12,12 @@
             </p>
             <p class="por">
               <img class="loginInfoImg" src="../../static/image/icon/checkCodeIcon.png"/>
-              <mu-text-field class="checkInfo" hintText="请输入图形验证码" :errorText="errorOfImgCode" v-model="imgCodeVal" @blur="$v.imgCodeVal.$touch()"/><br/>
-              <img class="poa poaImg" :src="registerCheck.data.url"/>
+              <mu-text-field class="checkInfo" hintText="请输入图形验证码" :errorText="errorOfImgCode" v-model="userRegister.imgCode" @blur="$v.userRegister.imgCode.$touch()"/><br/>
+              <img class="poa poaImg" :src="imgVlidateUrl" @click='getImgVlidate'/>
             </p>
             <p class="por">
               <img class="loginInfoImg" src="../../static/image/icon/checkImg.png"/>
-              <mu-text-field class="checkInfo" hintText="请输入验证码" v-model="smsCodeVal"/><br/>
+              <mu-text-field class="checkInfo" hintText="请输入验证码" :errorText="errorOfSmsCode" v-model="userRegister.smsCode"/><br/>
               <span class="poa poaImg">
                 <mu-raised-button :label="labelTitle" class="demo-raised-button" :disabled="isActive" :primary="!isActive" @click="changDisable"/>
               </span>
@@ -33,8 +33,10 @@
               <mu-raised-button label="确认提交" @click="register" class="demo-raised-button" fullWidth primary/>
           </form>
           <p class="keepLogin clearfix">
-            <mu-checkbox label="保持我的登录状态" class="demo-checkbox fl"/>
-            <span class="fr">立即注册</span>
+            <!--<mu-checkbox label="保持我的登录状态" nativeValue="保持我的登录状态" v-model="list" @change="changState" class="demo-checkbox fl"/>-->
+            <span class="fr">
+              <router-link to='/login'>已有账号</router-link>
+            </span>
           </p>
           <p class="loginNote">
                               温馨提示：未注册企服圈账号的手机号，登录时将自动注册，且代表您已同意
@@ -45,23 +47,28 @@
   </div>
 </template>
 <script>
-  import $ from 'jquery'
   import userService from '@/services/userService'
-  import { required, minLength, maxLength, numeric } from 'vuelidate/lib/validators'
+  import { required, minLength, maxLength, numeric, sameAs } from 'vuelidate/lib/validators'
+  import {showNotice} from '@/common/noticeAlertFun'
   export default {
     data () {
       return {
+        list: ['保持我的登录状态'],
         timer: '',
         labelTitle: '发送验证码',
         isActive: false,
-        imgCodeVal: '',
-        smsCodeVal: '',
         registerSmsCode: '',
-        registerCheck: {},
+          // 网络请求获得
+        imgVlidateUrl: '',
         userRegister: {
           phoneNumber: '',
           name: '',
-          password: ''
+          password: '',
+          // 网络请求获得
+          imgVlidateCode: '',
+          // 用户输入的图片验证码
+          imgCode: '',
+          smsCode: ''
         }
       }
     },
@@ -74,44 +81,43 @@
           minLength: minLength(11)
         },
         name: {
-          required,
-          minLength: minLength(4)
+          required
         },
         password: {
           required,
           minLength: minLength(6)
+        },
+        imgCode: {
+          'sameAsCode': true,
+          required,
+          numeric,
+          maxLength: maxLength(4),
+          minLength: minLength(4),
+          sameAsImgCode: sameAs('imgVlidateCode')
+        },
+        smsCode: {
+          required,
+          numeric,
+          maxLength: maxLength(4),
+          minLength: minLength(4)
         }
-      },
-      imgCodeVal: {
-        required,
-        numeric,
-        maxLength: maxLength(4),
-        minLength: minLength(4)
       }
     },
     created () {},
     mounted () {
-      $('#register').css('height', localStorage.bodyHeight - 225 + 'px')
+      var heightCss = localStorage.bodyHeight - 200
+      document.getElementById('register').style.height = heightCss + 'px'
             // :获取图片验证码
-      userService.GetImageCode({'username': this.userRegister.phoneNumber})
-        .then(response => {
-          this.registerCheck = response
-          // 在图形验证码前面拼接 ‘http：//’
-          this.registerCheck.data.url = 'http://' + this.registerCheck.data.url
-        })
+      this.getImgVlidate()
+//    userService.GetImageCode({'username': this.userRegister.phoneNumber})
+//      .then(response => {
+//        this.imgVlidateUrl = response.data.url
+//        this.userRegister.imgVlidateCode = response.data.code
+//      })
     },
     computed: {
       errorOfPhoneNumber () {
-        if (!this.$v.userRegister.phoneNumber.required) {
-          return '请输入手机号'
-        }
-        if (!this.$v.userRegister.phoneNumber.numeric) {
-          return '手机号必须全为数字'
-        }
-        if (!this.$v.userRegister.phoneNumber.minLength) {
-          return '请输入11位字符手机号'
-        }
-        if (!this.$v.userRegister.phoneNumber.maxLength) {
+        if (!this.$v.userRegister.phoneNumber.required || !this.$v.userRegister.phoneNumber.numeric || !this.$v.userRegister.phoneNumber.minLength || !this.$v.userRegister.phoneNumber.maxLength) {
           return '请输入11位字符手机号'
         }
         return ''
@@ -119,43 +125,51 @@
       errorOfName () {
         if (!this.$v.userRegister.name.required) {
           return '请输入昵称'
+        } else if (this.userRegister.name.replace(/^\s+|\s+$/g, '').length === 0) {
+          console.log(121255, this.userRegister.name.length)
+          return '请输入昵称'
+        } else {
+          return ''
         }
-        if (!this.$v.userRegister.name.minLength) {
-          return '请输入4个字符以上的昵称'
-        }
-        return ''
       },
       errorOfPassword () {
-        if (!this.$v.userRegister.password.required) {
-          return '请输入密码'
-        }
-        if (!this.$v.userRegister.password.minLength) {
+        if (!this.$v.userRegister.password.required || !this.$v.userRegister.password.minLength) {
           return '请输入6个字符以上的密码'
         }
         return ''
       },
       errorOfImgCode () {
-        if (!this.$v.imgCodeVal.required) {
-          return '请输入图片验证码'
-        }
-        if (!this.$v.imgCodeVal.numeric) {
-          return '图片验证码必须全为数字'
-        }
-        if (!this.$v.imgCodeVal.minLength) {
+        if (!this.$v.userRegister.imgCode.required || !this.$v.userRegister.imgCode.numeric || !this.$v.userRegister.imgCode.minLength || !this.$v.userRegister.imgCode.maxLength) {
           return '请输入4位字符图片验证码'
         }
-        if (!this.$v.imgCodeVal.maxLength) {
-          return '请输入4位字符图片验证码'
+        if (this.userRegister.imgCode !== this.userRegister.imgVlidateCode) {
+          return '请输入正确的图片验证码'
+        }
+        return ''
+      },
+      errorOfSmsCode () {
+        if (!this.$v.userRegister.smsCode.required || !this.$v.userRegister.smsCode.numeric || !this.$v.userRegister.smsCode.minLength || !this.$v.userRegister.smsCode.maxLength) {
+          return '请输入4位字符短信验证码'
         }
         return ''
       }
     },
     methods: {
+      changState () {},
+      getImgVlidate () {
+            // :获取图片验证码
+        userService.GetImageCode({'username': this.userRegister.phoneNumber})
+          .then(response => {
+            this.imgVlidateUrl = response.data.url
+            this.userRegister.imgVlidateCode = response.data.code
+          })
+      },
       changDisable () {
-        if (this.imgCodeVal !== this.registerCheck.data.code) {
+        if (this.$v.userRegister.phoneNumber.$invalid) {
+          showNotice('请输入手机号码')
           return ''
-        }
-        if (this.userRegister.phoneNumber.length !== 11) {
+        } else if (this.$v.userRegister.imgCode.$invalid) {
+          showNotice('请输入图像验证码')
           return ''
         }
         var _this = this
@@ -172,29 +186,37 @@
             sec--
           }
         }, 1000)
-        userService.GetSmsCode({'PhoneNum': this.userRegister.phoneNumber})
+//      请求短信验证码，需要手机号和图片验证码
+        userService.GetSmsCode({'PhoneNum': this.userRegister.phoneNumber, 'Action': this.userRegister.imgCode})
         .then(response => {
           console.log('Smslogin response')
           console.log(response)
+          if (response.data.isMember === true) {
+            showNotice('该手机号已注册，前往登录')
+            this.$router.push('/login')
+//          跳转之后,刷新图片验证码
+            this.getImgVlidate()
+          }
         })
       },
       register () {
-        if (this.userRegister.phoneNumber.length !== 11) {
+        if (this.$v.userRegister.phoneNumber.$invalid || this.$v.userRegister.imgCode.$invalid) {
           return ''
         }
-        alert(this.$v.$invalid)
-        console.log('this.smsCodeVal')
-        console.log(this.smsCodeVal)
-        userService.Regist({'UserName': this.userRegister.name, 'PhoneNumber': this.userRegister.phoneNumber, 'Password': this.userRegister.password, 'Code': this.smsCodeVal})
+        console.log('this.smsCode')
+        console.log(this.smsCode)
+        userService.Regist({'UserName': this.userRegister.name, 'PhoneNumber': this.userRegister.phoneNumber, 'Password': this.userRegister.password, 'Code': this.userRegister.smsCode})
           .then(response => {
             if (response.msg === 'ok') {
-              alert('注册成功，前往登录')
+              showNotice('注册成功，前往登录')
               // 注册成功跳转登录页面
               this.$router.push('/login')
             } else {
-              alert('注册失败')
+              showNotice('注册失败')
             }
           })
+        // 调用获取图片验证码请求
+        this.getImgVlidate()
       }
     }
   }
@@ -204,6 +226,8 @@
     width:100%;
     padding-bottom:40px;
     background:#68a7b9;
+    min-height: 725px;
+    margin-bottom:-50px;
   }
   .mu-raised-button.disabled {
     color: rgba(0, 0, 0, 0.87)!important;

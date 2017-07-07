@@ -3,88 +3,147 @@
     <div class="companyHeader">
         <img src="../../static/image/companyHeader.jpg"/>
     </div>
-    <div class="mainWraap">
+    <div class="mainWraap companyListBox">
       <div class="outLine">
-      <div class="mainWraapNav">
-        <mu-tabs class="" :value="activeTab" @change="handleTabChange">
-            <mu-tab v-for="(it,i) in companyList" :value="it" :title="it" :key="i"/>
-        </mu-tabs>
-      </div>
+        <div class="mainWraapNav">
+          <mu-tabs class="" :value="activeTab" @change="handleTabChange">
+              <mu-tab v-for="it in labelList" :value="it.id" :title="it.name"/>
+          </mu-tabs>
+        </div>
       </div>
       <div class="mainCon">
-        <ul class="clearfix">
-        	<li class="fl por demoLi" v-for='(it,i) in imgList'>
-        	  <mu-paper class="demo-paper" :zDepth="2" title="1234"/>
-            <img class="poa topImg" :src="it.imgurl" alt="" />
-            <h3 class="poa bottomH">{{it.name}}</h3>
+        <div class="blankCon companyBlank" v-if="companyList.length < 1">
+          <img src="../../static/image/icon/blank.png"/>
+          <h5>空空如也,去看看别的吧!</h5>
+        </div>
+        <ul class="clearfix" v-else>
+        	<li class="fl por demoLi" v-for='(it,i) in companyList'>
+        	  <mu-paper class="demo-paper" :zDepth="2"/>
+            <img class="poa topImg" :src="it.LogoUrl" alt="" />           
+            <h3 class="poa bottomH">{{it.Name}}</h3>           
             <div class="showInfo poa">
-              <h4>公司简介</h4>
-              <p>{{it.intruduce}}</p>
-              
-              <div class="por " @click="changShow(i)" :key='i'>
-                <div class="por" v-if = "it.favourite == 0">
-                <mu-raised-button class="demo-raised-button" label="收藏企业" primary/>
-                <img class="poa whiteStar" src="../../static/image/favourite.png" alt="" />
+              <router-link :to="{name: 'companyDetail', params: { companyId: it.Id }}">
+                <h4>公司简介</h4>
+                <p>{{it.Introduce}}</p>
+              </router-link>
+              <div class="por ">
+                <div class="por" v-if = "!it.FavoriteFlg">
+                <mu-raised-button class="demo-raised-button" label="收藏企业" primary @click='setFavorite(it.Id)'/>
+                <img class="poa whiteStar" src="../../static/image/favourite.png" alt="" @click='setFavorite(it.Id)'/>
                 </div>
                 <div class="por" v-else>
-                  <mu-raised-button class="demo-raised-button" label="已收藏" primary />
-                  <img class="poa whiteStar" src="../../static/image/favourited.png" alt=""/> 
+                  <mu-raised-button class="demo-raised-button" label="已收藏" primary @click='setFavorite(it.Id)'/>
+                  <img class="poa whiteStar" src="../../static/image/favourited.png" alt="" @click='setFavorite(it.Id)'/> 
                 </div>                
               </div>
-            </div>
+            </div>           
         	</li>
         </ul>        
       </div>
-      <div class="buttonBottom">
-        <div class="demo-button">加载更多</div>
-      </div>
-      
+      <div class="buttonBottom" v-if='loadMore'>
+        <div class="demo-button" @click="numAdd">加载更多</div>
+      </div>     
     </div>
   </div>
 </template>
 <script>
+  import labelService from '@/services/labelService'
+  import companyService from '@/services/companyService'
+  import favoriteService from '@/services/favoriteService'
   export default {
     data () {
       return {
-        index: 11111111111111,
         vShow: true,
-        activeTab: '全部',
-        companyList: ['全部', '多渠道营销', '医学服务', '培训咨询', '技术支持'],
-        imgList: [
-          {imgurl: '../../static/image/temp/friend01.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend02.jpg', name: '丁香园', favourite: 1, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend03.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend04.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend05.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend06.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend07.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend08.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend09.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend01.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend01.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'},
-          {imgurl: '../../static/image/temp/friend01.jpg', name: '丁香园', favourite: 0, intruduce: '紫色医疗，专注于患者教育，根据企业需求定制解决方案，产品简单易用，针对性开展患者教育和医生激励，从而提高患者的依从性。'}
-        ]
+        loadMore: false,
+        activeTab: -1,
+        serviceData: {id: 0, includeChild: false, includeAllOption: true},
+        showData: {page: 1, pageNum: 12, labelId: 0},
+        labelList: [],
+        companyList: [],
+        selected: {objectId: 0, objectType: 'company'}
       }
     },
-    created () {},
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.showData = {page: 1, pageNum: 12, labelId: -1}
+        vm.activeTab = -1
+        vm.getCompanyList(vm.showData)
+        console.log('companyListreset')
+        console.log(vm.companyList)
+      })
+    },
+    created () {
+      this.getLabel()
+    },
     mounted () {},
     computed: {},
+    watch: {
+      'showData': {
+        handler (newValue, oldValue) {
+          this.getCompanyList(this.showData)
+        },
+        deep: true
+      }
+    },
     methods: {
+      getLabel () {
+        labelService.getServiceLabel(this.serviceData)
+        .then(response => {
+          this.labelList = response.data
+          this.showData.labelId = -1
+          console.log('labelList')
+          console.log(this.labelList)
+        })
+      },
+      getCompanyList (params) {
+        companyService.getCompanyList(params)
+        .then(response => {
+          if (params.page === 1) {
+            this.companyList = []
+          }
+          for (var i = 0; i < response.data.length; i++) {
+            this.companyList.push(response.data[i])
+          }
+          if (response.count > params.page * params.pageNum) {
+            this.loadMore = true
+          } else {
+            this.loadMore = false
+          }
+          console.log('companyList')
+          console.log(this.companyList)
+        })
+      },
       handleTabChange (val) {
         this.activeTab = val
+        this.companyList = []
+        this.showData.page = 1
+        this.showData.labelId = val
       },
-      changShow (i) {
-        this.index = this.i
-        this.imgList[i].favourite = !this.imgList[i].favourite
+      numAdd () {
+        this.showData.page = this.showData.page + 1
+        console.log('page' + this.showData.page)
+      },
+      setFavorite (id) {
+        this.selected.objectId = id
+        favoriteService.setFavorite(this.selected)
+        .then(response => {
+          console.log('SetFavorite')
+          console.log(response)
+          for (var i = 0; i < this.companyList.length; i++) {
+            if (this.companyList[i].Id === this.selected.objectId) {
+              this.companyList[i].FavoriteFlg = response.data.favoriteFlag
+            }
+          }
+        })
       }
     }
   }
 </script>
 <style>
   #companyList .mu-raised-button.mu-raised-button-inverse {
-    color: #083c6f;
+    background: #083c6f!important;
     width: 86%;
-    color:#fff;
+    color:#fff!important;
     text-indent: 1em;
   }
   #companyList .mainWraapNav span.mu-tab-link-highlight {
@@ -122,6 +181,9 @@
     height:120px;
     overflow: hidden;
   }
+  #companyList .showInfo h4{
+    color: #000!important;
+  }
   .outLine{
     border-bottom:1px solid #ccc;
     width:100%;
@@ -137,6 +199,9 @@
     margin:0 auto;
     font-weight: bold;
     font-size: 16px;
+  }
+  .companyListBox{
+    min-height:496px;
   }
   #companyList .mainWraapNav{
     width:550px;
@@ -171,15 +236,20 @@
   .bottomH{
     width:100%;
     bottom:0;
+    padding: 0 20px;
     text-align: center;
     height:50px;
+    overflow: hidden;
     line-height: 50px;
+    font-size: 16px;
+    color: #2d2d2d;
+    background-color: #f7f9f9;
   }
   .topImg{
     left:14px;
     top:14px;
     width:157px;
-    height:106px;
+    height:92px;
   }
   .demo-button{
     display: inline-block;
@@ -199,5 +269,8 @@
   #companyList .buttonBottom{
     width:100%;
     text-align: center;
+  }
+  .mainCon .companyBlank{
+    height: auto;
   }
 </style>

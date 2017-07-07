@@ -7,7 +7,6 @@ import store from '@/store/store'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
 import './assets/theme.less'
-import $ from 'jquery'
 Vue.config.productionTip = false
 Vue.use(MuseUI)
 import Vuelidate from 'vuelidate'
@@ -17,7 +16,6 @@ new Vue({
   el: '#app',
   router,
   store,
-  $,
   template: '<App/>',
   components: { App }
 })

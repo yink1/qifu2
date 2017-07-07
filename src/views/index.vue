@@ -1,13 +1,13 @@
 <template>
   <div class="demo">
-    <banner></banner>
+    <banner :category='category'></banner>
     <div class="banner_serv">
       <div class="banner_serv_list">
         <requirement></requirement>
         <recommendation></recommendation>
       </div>
     </div>
-    <div v-for="label in labelList.data">
+    <div v-for="label in labelList">
     	  <serviceOfLabel :label="label"></serviceOfLabel>
     	</div>
     <div class="company_logo">
@@ -23,20 +23,21 @@
   import friendshipLink from '@/components/homepage/friendshipLink'
   import serviceOfLabel from '@/components/homepage/serviceOfLabel'
   import labelService from '@/services/labelService'
-  import $ from 'jquery'
+// import $ from 'jquery'
   export default {
     name: 'index',
     data () {
       return {
         labelList: [],
-        dialog: false
+        dialog: false,
+        category: 'homepage'
       }
     },
     created () {
-      $(this).index()
-      labelService.getServiceLabel({id: 0, includeChind: true})
+//    $(this).index()
+      labelService.getServiceLabel({id: 0, includeChild: true, orderbyDesc: true})
         .then(response => {
-          this.labelList = response
+          this.labelList = response.data
           console.log('this.labelList')
           console.log(this.labelList)
         })
@@ -112,7 +113,7 @@
   }
   .demo .company_logo{
     width: 1200px;
-    margin:20px auto 0;
+    margin:20px auto 50px;
   }
   .labelDox{
     background-color: #fff;

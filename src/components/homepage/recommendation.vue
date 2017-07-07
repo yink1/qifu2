@@ -1,10 +1,10 @@
 <template>
   <div class="recommend_box">
-    <mu-flexbox class="recommend_list" gutter = 15 >
+    <mu-flexbox class="recommend_list" :gutter="gutter" >
       <mu-flexbox-item class="recommend_flex" v-for="(slide,index) in recommendationList.data">
         <!--<img src="../../../static/image/forward.jpg" />-->
-        <img :src="slide.picUrl"/>
-        <a href="#" >
+        <a :href="slide.url" target= "_blank">
+           <img :src="slide.picUrl"/>
           <div class="cover" v-if="index == 0">
             <span class="cover_title">最近直播</span>
           </div>
@@ -19,7 +19,8 @@ import bannerService from '@/services/bannerService'
 export default {
   data () {
     return {
-      recommendationList: {}
+      recommendationList: {},
+      gutter: 15
     }
   },
   created () {
@@ -32,6 +33,8 @@ export default {
       // 接收请求返回值
         .then(response => {
           this.recommendationList = response
+          console.log('this.recommendationList')
+          console.log(this.recommendationList)
         })
     }
   }
@@ -54,7 +57,7 @@ export default {
   display: block;
   opacity: 0.5;
 }
-.recommend_flex .invite:hover{
+.recommend_flex img:hover{
   opacity: 1;
 }
 .recommend_box .mu-flexbox .mu-flexbox-item{
