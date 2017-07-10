@@ -3,7 +3,7 @@
     <div class="companyHeader">
         <img src="../../static/image/companyHeader.jpg"/>
     </div>
-    <div class="mainWraap companyListBox">
+    <div class="mainWraap companyListBox mainList">
       <div class="outLine">
         <div class="mainWraapNav">
           <mu-tabs class="" :value="activeTab" @change="handleTabChange">
@@ -18,14 +18,19 @@
         </div>
         <ul class="clearfix" v-else>
         	<li class="fl por demoLi" v-for='(it,i) in companyList'>
+        	  <router-link :to="{name: 'companyDetail', params: { companyId: it.Id }}">
         	  <mu-paper class="demo-paper" :zDepth="2"/>
             <img class="poa topImg" :src="it.LogoUrl" alt="" />           
-            <h3 class="poa bottomH">{{it.Name}}</h3>           
+            <h3 class="poa bottomH">{{it.Name}}</h3>
+            </router-link>
+            <div class="poa blankPoa">
+              
+            </div>
             <div class="showInfo poa">
-              <router-link :to="{name: 'companyDetail', params: { companyId: it.Id }}">
+              
                 <h4>公司简介</h4>
                 <p>{{it.Introduce}}</p>
-              </router-link>
+              
               <div class="por ">
                 <div class="por" v-if = "!it.FavoriteFlg">
                 <mu-raised-button class="demo-raised-button" label="收藏企业" primary @click='setFavorite(it.Id)'/>
@@ -153,11 +158,21 @@
     left:40px;
     top:8px;
   }
+  .blankPoa{
+    width:100%;
+    height:20px;
+    bottom:-20px;
+    display: none;
+    left:0px;
+  }
+  .mainList.mainWraap{
+    padding-bottom:90px;
+  }
   .showInfo{
     text-align: center;
     width:202px;
     height:220px;
-    top:-10px;
+    top:180px;
     left:-10px;
     background:#fff;
     border:1px solid #ccc;
@@ -191,7 +206,7 @@
   }
   .companyHeader img{
     width:100%;
-    height:auto;
+    height:130px;
   }
   .mainWraap{
     width:920px;
@@ -201,7 +216,7 @@
     font-size: 16px;
   }
   .companyListBox{
-    min-height:496px;
+    min-height:570px;
   }
   #companyList .mainWraapNav{
     width:550px;
@@ -212,7 +227,7 @@
   .mainCon{
     padding-top:10px;
   }
-  .demoLi:hover .showInfo{
+  .demoLi:hover .showInfo,.demoLi:hover .blankPoa{
     display: block;
   }
   .demoLi{
@@ -221,7 +236,7 @@
   margin-right: 60px;
   margin-top:20px;
   }
-  .demoLi:hover{
+  .demoLi .demo-paper:hover{
     cursor:pointer;
   }
   .demoLi:nth-child(4n+4){

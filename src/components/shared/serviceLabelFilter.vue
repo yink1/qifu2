@@ -31,7 +31,8 @@
       <span class="sele_list_title">相关服务：</span>
       <div class="checked_pop_right">
       <div v-for="serviceDetail in serviceDetailList" class='selectService'>
-      <mu-checkbox :label="serviceDetail.ServiceName" class="demo-checkbox" v-if="actvieChildLabelId == serviceDetail.labelId" v-model="serviceDetail.CheckFlag" @change="setSelectService(serviceDetail.ServiceId)"/>
+        <!--<input type="checkbox" :label="serviceDetail.ServiceName" class="demo-checkbox" v-if="actvieChildLabelId == serviceDetail.labelId" v-model="serviceDetail.CheckFlag" @change="setSelectService(serviceDetail.ServiceId)">-->
+      <mu-checkbox :label="serviceDetail.ServiceName" nativeValue="true" class="demo-checkbox" v-if="actvieChildLabelId == serviceDetail.labelId" v-model="serviceDetail.CheckFlag" @change="setSelectService(serviceDetail.ServiceId)"/>
       </div>
       </div>
     </div>
@@ -334,14 +335,14 @@
           for (var i = 0; i < this.serviceDetailList.length; i++) {
             if (id !== this.serviceDetailList[i].ServiceId && this.serviceDetailList[i].CheckFlag === true) {
               this.serviceDetailList[i].CheckFlag = false
+            } else if (id === this.serviceDetailList[i].ServiceId) {
+              this.serviceDetailList[i].CheckFlag = true
             }
           }
         } else {
           var selectedService = this.serviceDetailList.filter(function (item) {
             return item.CheckFlag === true && item.labelId === _this.actvieChildLabelId && item.ServiceId !== id
           })
-          console.log('selectedService')
-          console.log(selectedService)
           if (selectedService.length === 0) {
             _this.serviceDetailList.filter(function (item) {
               if (item.labelId !== _this.actvieChildLabelId) {
@@ -353,6 +354,9 @@
         var selectService = this.serviceDetailList.filter(function (item) {
           return item.CheckFlag === true
         })
+        console.log('selectService')
+        console.log(JSON.stringify(this.serviceDetailList))
+        console.log(selectService)
         this.$emit('setSelectService', selectService)
       }
     }

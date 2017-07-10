@@ -36,7 +36,7 @@
                 <a href="javascript:;" @click="close" class="close_dialog">
                   <img src="../../static/image/del.png"/>
                 </a>
-                <requirement :companyId='data.OwnerId' :ServiceId ='data.Id'></requirement>
+                <requirement v-on:child-say="listenToMyBoy" :companyId='data.OwnerId' :ServiceId ='data.Id'></requirement>
               </div>
             </div>            
             <div class="u_do">
@@ -87,6 +87,7 @@
   import { mapGetters } from 'vuex'
   import * as types from '@/store/types'
   import router from '@/router/router'
+  import userService from '@/services/userService'
   export default {
     data () {
       return {
@@ -229,6 +230,14 @@
         .then(response => {
           this.docList = response.data
         })
+        if (this.userLoginStatus) {
+          // 添加足迹
+          userService.PostAddHistory({objectId: this.id, objectType: 'service'})
+          .then(response => {
+            console.log('this.PostAddHistory')
+            console.log(response)
+          })
+        }
       },
       open (sid, cid) {
         if (!this.userLoginStatus) {
@@ -251,6 +260,13 @@
         this.dialog = false
         document.getElementsByTagName('body')[0].style.overflow = 'auto'
         document.getElementsByTagName('html')[0].style.overflow = 'auto'
+      },
+      // 接收子组件传递的数据
+      listenToMyBoy: function (somedata) {
+        this.childWords = somedata
+        if (this.childWords === 'ok') {
+          this.dialog = false
+        }
       }
     },
     beforeRouteEnter (to, from, next) {
@@ -327,7 +343,12 @@
   width: 600px;
   height: 336px;
   margin:0 0 0 10px;
+  overflow: hidden;
   position: relative;
+  border-bottom: 1px solid #d3d3d3;
+}
+.cont_left .wenku-api-box{
+  padding-top: 0;
 }
 .enlarge{
   position: absolute;

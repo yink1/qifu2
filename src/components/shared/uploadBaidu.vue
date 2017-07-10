@@ -92,7 +92,6 @@
       },
       uploadDoc () {
         let _this = this
-        _this.modeType = 'indeterminate'
         var fd = new FormData()
         var coverFile = document.getElementById('uploadFilebig').files[0]
         var docSize = coverFile.size
@@ -127,6 +126,7 @@
           }
           console.log(coverFile)
           console.log(_this.DocId)
+          _this.modeType = 'indeterminate'
           fd.append('myDocbig', coverFile)
           fd.append('docId', _this.DocId)
           _this.fileName = coverFile.name

@@ -44,12 +44,12 @@
         <h2 class="service_sele">相关案例</h2>
         <companyCase v-for="doc,index in docList" @editDoc="editDoc" :docList="docList" @setDoc='setDoc' :docIndex="index"></companyCase>
       </div>
-      <div class="service_list_box case_box case_box1">
+      <div class="service_list_box case_box case_box1" ref="buttoned" id="bottomUrl">
           <ul class="service_list">
             <li class="layout_self">
               <p class="filein_upfile1">
-                <a v-show="bottomImgUrl == ''" href="javascript:;" class="filein_ppt filein_ppt1"><span>
-                  <formDataupload :uptoken="uploadToken" :formId="bottomImgForm" @setUploadedFileInfo="setUploadedFileInfo"></formDataupload>
+                <a v-show="bottomImgUrl == ''" href="javascript:;" class="filein_ppt filein_ppt1" ><span>
+                  <formDataupload :uptoken="uploadToken" :formId="bottomImgForm" :trigger="trigger" v-if='trigger' @setUploadedFileInfo="setUploadedFileInfo"></formDataupload>
                 </span></a>
                 <!--<upload :browse_button='bottomImg' @setUploadedFileInfo="setUploadedFileInfo">
                 </upload>-->
@@ -227,7 +227,8 @@
           score: '',
           picUrl: '',
           introduce: ''
-        }]
+        }],
+        trigger: null
       }
     },
     components: {
@@ -244,6 +245,10 @@
       this.get()
     },
     mounted () {
+      console.log('this.$refs.buttoned.$el')
+      console.log(this.$refs.buttoned)
+      // this.trigger = this.$refs.buttoned.$el
+      this.trigger = document.getElementById('bottomUrl')
     },
     computed: {},
     methods: {
@@ -261,13 +266,6 @@
             var bannerList = response.data.banners.filter(function (item) {
               return item.category === 'homePageTop'
             })
-            var bottomList = response.data.banners.filter(function (item) {
-              return item.category === 'homePageBottom'
-            })
-            if (bottomList.length > 0) {
-              this.bottomImgUrl = bottomList[0].picUrl
-              document.getElementById('bottomImgShow').src = bottomList[0].picUrl
-            }
             for (var i = 0; i < 4; i++) {
               if (bannerIndex < bannerList.length && i === bannerList[bannerIndex].bannerNum - 1) {
                 _this.uploadFile.push({
@@ -282,6 +280,13 @@
                 _this.uploadFile.push({id: i, buttunId: 'pickfiles' + (i + 1), picName: '', picUrl: '', bannerLink: ''})
               }
             }
+          }
+          console.log('response.data.homePageBottom')
+          console.log(response.data.homePageBottom)
+          var bottomBanner = response.data.homePageBottom
+          if (bottomBanner !== null && bottomBanner !== undefined) {
+            this.bottomImgUrl = bottomBanner
+            document.getElementById('bottomImgShow').src = bottomBanner
           }
           console.log('response.data.services')
           console.log(this.uploadFile)
@@ -654,9 +659,10 @@
             serviceList: this.serviceList[j].detailData
           })
           var detailCntList = this.serviceList[j].detailData.filter(function (item) {
-            return item.serviceId > 0
+            return item.serviceId !== 0
           })
           console.log('detailCntList')
+          console.log(this.serviceList[j].detailData)
           console.log(detailCntList)
           if (detailCntList !== undefined && detailCntList.length > 0) {
             hasDetail = true
@@ -668,6 +674,8 @@
             docNum: k + 1
           })
         }
+        console.log('hasDetail')
+        console.log(hasDetail)
         if (banners.length === 0) {
           showNotice('请设定您的Banner')
           return
@@ -721,7 +729,7 @@
 .blankImg {
   width:900px;
   height:280px;
-  background:#f2f5f8;
+  background:#f2f9ff;
 }
 .blankImg img:hover {
   cursor: pointer;
@@ -816,19 +824,13 @@ li.home_remark {
 .hocoll_logo {
   width: 70px;
   height: 58px;
-  border-radius: 6px;
+  border-radius: 4px;
   position: absolute;
   top: 40px;
   right: 12px;
   background: #fff;
   z-index: 2;
-  box-shadow: -4px 0 4px rgba(0,0,0,.256863), 
-/*左边阴影*/
-  4px 0 4px rgba(0,0,0,.256863), 
-/*右边阴影*/
-   0 -4px 4px rgba(0,0,0,.256863), 
-/*顶部阴影*/
-   0 4px 4px rgba(0,0,0,.256863);
+  box-shadow:0 3px 10px rgba(0,0,0,.156863), 0 3px 10px rgba(0,0,0,.227451)
 }
 .replaceImgButton:hover, .hocoll_logo:hover {
   cursor: pointer;
@@ -1026,6 +1028,7 @@ li.home_remark {
 .homeManageContent .service_sele{width: 100%;}
 .swiperBox .replace_ment,.layout_self .replace_ment{display: none;}
 .swiperBox:hover .replace_ment,.layout_self:hover .replace_ment{display: block;}
+.case_box1{border:none;}
 /*.caseSum_box{border: 1px dashed #e6e6e6;margin: 0 10px;}*/
 </style>
 <style>
@@ -1034,7 +1037,7 @@ li.home_remark {
   }
   #homepageManagment  #selServicePic{
     position: absolute;
-    top: 12px;
+    top: 0px;
     width: 88px;
     overflow: hidden;
     height: 36px;
@@ -1066,5 +1069,9 @@ li.home_remark {
 }
 .dialog,.requirement_box{
   z-index:11;
+}
+.company_service_list>div{
+  height: 260px;
+  margin-bottom: 4px;
 }
 </style>

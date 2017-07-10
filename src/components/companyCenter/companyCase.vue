@@ -7,6 +7,7 @@
         <mu-float-button icon="add"  class="demo-float-button" @click.stop="case_time"/>
         <div class="case_list" v-if="case_list">
           <p @click.stop="setDocData(index)" v-for="uploadDoc,index in uploadDocList.data"><a :class="{ type_ppt: uploadDoc.format == 'ppt' || uploadDoc.format == 'pptx', type_txt: uploadDoc.format == 'txt', type_word: uploadDoc.format == 'doc' || uploadDoc.format == 'docx', type_excel: uploadDoc.format == 'xls' || uploadDoc.format == 'xlsx', type_pdf: uploadDoc.format == 'pdf'}" href="javascript:;">{{uploadDoc.title}}</a></p>
+          <router-link to="/companyCenter/docManagment" class="add_new_case">添加新的案例</router-link>
         </div>
         <!-- 相关服务列表样式 -->
         <div class="Related_services" v-if="docList[docIndex].title != ''">
@@ -43,7 +44,7 @@
       <mu-list-item title="下移" @click="editDoc('down')">
         <mu-avatar slot="left":size='20'  backgroundColor="#bcbcbc"><img src="../../../static/image/down.png"/></mu-avatar>
       </mu-list-item>
-      <mu-list-item title="更多详情" @click="editDoc('add')">
+      <mu-list-item title="更多案例" @click="editDoc('add')">
         <mu-avatar slot="left":size='20'  backgroundColor="#bcbcbc"><img src="../../../static/image/add.png"/></mu-avatar>
       </mu-list-item>
     </div>
@@ -227,7 +228,7 @@
   width:856px;
   height: 232px;
 }
-.case_list{position:absolute; left:50%; text-align: left; margin-left:-250px; top:10px; width:500px; height: 140px; padding:6px 24px; background:#fff; border-radius: 4px;}
+.case_list{position:absolute; left:50%; text-align: left; margin-left:-250px; top:10px; width:500px; max-height: 140px; padding:6px 24px; background:#fff; border-radius: 4px;overflow: auto;}
 .case_list p a{display: block; padding-left:30px; background-position: left center; background-repeat: no-repeat; font-size: 14px; color:#444; line-height: 32px;}
 .case_list .type_ppt{background-image: url(../../../static/image/ppt_icon.png);}
 .case_list .type_pdf{background-image: url(../../../static/image/pdf_icon.png);}
@@ -240,6 +241,7 @@
 .datpage_center .demo-raised-button{width: 116px;}
 .data_pagecont .datpage_center .mu-raised-button-label{padding-left: 10px;}
 .data_pagecont .datpage_center .mu-raised-button.disabled{padding: 0;}
+.case_list .add_new_case{background: url(../../../static/image/icon/unknown_icon.png) left center no-repeat;padding-left: 30px;font-size: 14px;}
 </style>
 
 

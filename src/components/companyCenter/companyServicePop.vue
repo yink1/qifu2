@@ -178,6 +178,8 @@ export default {
   cursor:pointer;
   text-align: center;
   border-radius: 4px;
+  margin: 0 !important;
+  cursor: pointer !important;
 }
 .sele_intro .service_type{
   font-size: 16px;

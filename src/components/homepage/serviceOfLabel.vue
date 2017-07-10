@@ -11,7 +11,7 @@
           <!-- value是点击下划线匹配符，需要在create方法中初始化activeTab这个值，设置为第一个标签的值 -->
           <ul class="clearfix fr ulList">
           	<li class="fr" v-for="chindTab in label.child" :value="chindTab.id" :title="chindTab.name" @click="handleTabChange(chindTab.id)" :class="{'liClass': activeTab == chindTab.id}">
-          	  <span >{{chindTab.name}}</span>
+          	  <span>{{chindTab.name}}</span>
           	</li>
           </ul>
         </div>
@@ -21,7 +21,8 @@
               <img :src="service.picUrl | thumbnail('215','106')"  alt="">
               <h4 class="txleft">{{service.serviceName}}</h4>
               <div class="imgFooter">
-                <img class="" src="../../../static/image/temp/companyIcon.png" height="16" width="16" > {{service.companyName}}
+                <img class="" src="../../../static/image/temp/companyIcon.png" height="16" width="16" >
+                <span class="textUnder">{{service.companyName}}</span>
               </div>
             </div>
           </li>
@@ -96,6 +97,10 @@
   ul li {
     list-style: none;
   }
+  .textUnder{
+    text-decoration: underline;
+    vertical-align: bottom;
+  }
     .imgDatapos .blankCon img {
     display: block;
     width: 260px;
@@ -105,7 +110,7 @@
   .labelDox {
     width: 1200px;
     margin: 0 auto;
-    border: 1px solid #ccc;
+    background:#f1f1f1;
   }
   /* 清除浮 动*/
   
@@ -136,6 +141,7 @@
     width: 270px;
     height: 422px;
     overflow: hidden;
+    background: #fff;
   }
   
   .flbox img {
@@ -144,10 +150,11 @@
   }
   
   .frbox {
-    width: 900px;
-    margin-left: 15px;
+    width: 915px;
+    padding-left: 15px;
     height: 428px;
     box-sizing: border-box;
+    background:#fff;
   }
   
   .headerLi {
@@ -174,6 +181,7 @@
   .txleft {
     text-align: left;
     padding-left: 4px;
+    
   }
   
   .imgFooter {

@@ -14,7 +14,7 @@
       </div>
       <div class="nav_btn_box">
         <mu-raised-button label="搜索" class="demo-raised-button" @click='search'/>
-        <mu-raised-button class="demo-raised-button upload_btn1" label="上传资料" labelPosition="after" @click="jump('/docUploadManagment')">
+        <mu-raised-button class="demo-raised-button upload_btn1" label="上传资料" labelPosition="after" @click="docJump">
           <i class="mudocs-icon-custom-github mu-icon"></i>
         </mu-raised-button>
       </div>
@@ -149,6 +149,14 @@
         console.log(params)
         this.$router.push(params)
         this.clickService = false
+      },
+      docJump () {
+//      上传文档按钮点击跳转,当登录时,跳转至上传文档页面,未登录则跳转到登录页面
+        if (this.userLoginStatus === true) {
+          this.$router.push('/docUploadManagment')
+        } else {
+          this.$router.push('/login')
+        }
       },
       ...mapMutations({
         setUserLogout: [types.SET_USER_LOGOUT]

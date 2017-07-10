@@ -16,14 +16,14 @@
       <div class="info_list">
         <label>企业LOGO</label>
         <div class="info_button">
-          <mu-raised-button label="选择文件"  class="demo-raised-button select_flie"><br/>
+          <a class="select_flie select_flie_a">选择文件<br/>
             <formDataupload :uptoken="uploadToken" :trigger="trigger" :formId="browse_button" @setUploadedFileInfo="setUploadedFileInfo" class="companyPics"></formDataupload>
-          </mu-raised-button>
+          </a>
           <!--<upload :browse_button='browse_button' @setUploadedFileInfo="setUploadedFileInfo" class="companyPics">
           </upload>-->
           <span>上传图片大小建议：图片比例16：9</span>
         </div>
-        <mu-raised-button class="previewImgId" ref='buttoned'>
+        <mu-raised-button class="previewImgId prowed" ref='buttoned'>
         <!--首次进入服务商入驻，显示替代图片，之后显示上传的图片-->       
           <img id="previewImg" src="../../../static/image/enter_center.png" v-if="addCompanyInfoData.logoUrl.length===0"/>
           <img id="previewImg" :src="addCompanyInfoData.logoUrl" v-if="addCompanyInfoData.logoUrl.length>0"/>
@@ -363,6 +363,19 @@
   }
 </script>
 <style>
+  .select_flie_a{
+    display: block;
+    overflow: hidden;
+    width: 116px;
+    height: 36px;
+    position: relative;
+    background:#083C6F;
+    color:#fff;
+    text-align: center;
+    line-height: 36px;
+    border-radius: 4px;
+    margin:12px 0;
+  }
 .companyInfo_box{
   width: 940px;
 }
@@ -430,6 +443,10 @@
   width: 160px;
   height: 90px;
   margin: 10px 0 20px 40px;
+  cursor:pointer!important;
+  background: none
+}
+.previewImgId.mu-raised-button.prowed{
   cursor:text!important;
 }
 #previewImg{

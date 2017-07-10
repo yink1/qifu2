@@ -48,7 +48,7 @@
     	  <div v-if="ok" class="por">
     	   <h3 v-show="introBlank">选取您上传的介绍文件类型</h3>
   	     <div class="filein_upfile  demo-flat-button-container" v-show="introBlank">
-            <uploadBaidu :showBtn="false" @setUploadedFileInfo="setUploadedBaiduFileInfo" :fileFormat='true' :accept='baiduAccept'></uploadBaidu>
+            <uploadBaidu :showBtn="false" @setUploadedFileInfo="setUploadedBaiduFileInfo"></uploadBaidu>
             <a href="javascript:;" class="filein_ppt filein_ppt1" id='introPicUp'>
               <span>
                 <formDataupload :uptoken="uploadToken" :formId="introFormId" @setUploadedFileInfo="setUploadedIntroFileInfo"></formDataupload>
@@ -117,14 +117,16 @@
       </div>
       </div>
       <div class="clearfix btn_service">
-        <mu-raised-button label="确认提交" class="demo-raised-button fr submit"  @click='submitConfirm'/> 
+        <mu-raised-button label="保存草稿" class="demo-raised-button fr submit"  @click='submitDraft'/> 
+        <mu-raised-button label="发布按钮" class="demo-raised-button fr"  @click='submitConfirm' primary/> 
       </div>
     </div>
   <div class="pof" v-show="dialogShowed">
        <div class="poa outBox">
-         <h5>为您的服务上传一张封面图吧，若无图片的话无法在列表页面显示</h5>
+         <h5>为您的服务上传一张封面图吧，若无图片的话无法在列表页面显示!</h5>
          <div class="uploadBoxCheck por">
            <img src="" id="showBoxIntro" alt="" width="100%" height="100%"/>
+           <img src="../../../static/image/qifu_logo.png" class="qifu_logo" v-if='showUploadP'>
            <p class="uploadBoxHead" v-if="showUploadP">请上传封面图</p>
            <p v-if="showUploadP">图片大小建议：图片比例16：9（宽>470px）</p>
            <p class="poa uploadBoxTitle" v-show='checkList.length'>
@@ -173,7 +175,6 @@
         introBlank: true,
         ok: true,
         checkList: [],
-        baiduAccept: 'application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation',
         city: '',
         upBtnId: 'videoUpBtn',
         logoUrl: '../../../static/image/logoStyle.png',
@@ -197,8 +198,7 @@
           id: '',
           imgBtnId: 'detailImg1',
           type: '',
-          content: '',
-          status: 0
+          content: ''
         }],
         docList: [{id: '',
           title: '',
@@ -223,7 +223,8 @@
         dataList: [],
         companyInfo: {},
         LabelId: 0,
-        serviceDisplayPic: ''
+        serviceDisplayPic: '',
+        submitType: 202
       }
     },
     components: {
@@ -276,6 +277,8 @@
     methods: {
       closed () {
         this.dialogShowed = false
+        document.getElementsByTagName('body')[0].style.overflow = 'auto'
+        document.getElementsByTagName('html')[0].style.overflow = 'auto'
       },
       getQiniuToken () {
         qiniuService.getQiniuToken()
@@ -304,8 +307,6 @@
         this.serviceIntroPicShow = restUrl
         this.serviceIntroPic = restUrl
         this.introBlank = false
-        this.serviceIntroType = 'pic'
-        this.serviceIntroVendor = 'qiniu'
       },
       setUploadedIntroFileInfoBox (buttonId, fileName, restUrl) {
         document.getElementById('showBoxIntro').setAttribute('src', restUrl)
@@ -333,8 +334,7 @@
               id: '',
               imgBtnId: 'detailImg1',
               type: '',
-              content: '',
-              status: 0
+              content: ''
             }]
           }
         } else if (operateType === 'add') {
@@ -342,8 +342,7 @@
             id: '',
             imgBtnId: 'detailImg' + (itemIndex + 2),
             type: '',
-            content: '',
-            status: 0
+            content: ''
           })
         }
       },
@@ -363,17 +362,6 @@
         } else if (operateType === 'delete') {
           if (this.docList.length > 1) {
             this.docList.splice(itemIndex, 1)
-          } else {
-            this.docList = [{id: '',
-              title: '',
-              documentId: '',
-              format: '',
-              picUrl: '',
-              introduce: '',
-              favoriteFlg: false,
-              userName: '',
-              clickCount: 0
-            }]
           }
         } else if (operateType === 'add') {
           this.docList.push({id: '',
@@ -392,19 +380,19 @@
       },
       submitConfirm () {
         this.dialogShowed = true
+        this.submitType = 200
+        document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+        document.getElementsByTagName('html')[0].style.overflow = 'hidden'
+      },
+      submitDraft () {
+        this.dialogShowed = true
+        document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+        document.getElementsByTagName('html')[0].style.overflow = 'hidden'
+        this.submitType = 202
       },
       submitServiceDetail () {
         var materials = []
         var serviceCase = []
-        if (this.LabelId === 0 || this.LabelId === '') {
-          showNotice('请选择您的服务分类')
-        } else if (this.servicePic === '') {
-          showNotice('请设定您的服务Banner')
-        } else if (this.serviceIntroPic === '') {
-          showNotice('请上传您的介绍文件')
-        } else if (this.detailDataList.length === 0) {
-          showNotice('请设定您的服务详情')
-        }
         if (this.serviceIntroPic !== '') {
           materials.push({
             id: this.introId,
@@ -456,24 +444,52 @@
             orderNum: k + 1
           })
         }
+        var materialsList = materials.filter(function (item) {
+          return item.mainMaterialFlag === 0
+        })
+        if (this.LabelId <= 0 || this.LabelId === '') {
+          showNotice('请选择您的服务分类')
+          return
+        } else if (this.servicePic === '') {
+          showNotice('请设定您的服务Banner')
+          return
+        } else if (this.serviceIntroPic === '') {
+          showNotice('请上传您的介绍文件')
+          return
+        } else if (this.serviceTitle === '') {
+          showNotice('请输入服务标题')
+          return
+        } else if (materialsList.length === 0) {
+          showNotice('请设定您的服务详情')
+          return
+        } else if (this.serviceDisplayPic === '') {
+          showNotice('请设定您的服务封面')
+          return
+        }
         var submitData = {
           id: this.id,
           name: this.serviceTitle,
           picUrl: this.serviceDisplayPic,
           showNameFlag: false,
           inverseFlag: false,
-          city: this.city,
+          city: this.zero,
           introduce: this.serviceIntro,
           bannerPic: this.servicePic,
           labelId: this.LabelId,
           labelName: '',
           materials: materials,
-          serviceCase: serviceCase
+          serviceCase: serviceCase,
+          status: this.submitType
         }
         service.editServiceInfo(submitData)
           .then(response => {
             if (response.msg === 'ok') {
-              showNotice('提交成功')
+              var responseStat = response.data
+              if (responseStat.status === 102) {
+                showNotice('您发布的内容正在转码，转码成功后，内容将自动发布！')
+              } else {
+                showNotice('提交成功')
+              }
               this.closed()
             } else {
               showNotice(response.msg)
@@ -525,7 +541,7 @@
                 this.LabelId = this.dataList[0].LabelId
                 this.serviceTitle = this.dataList[0].Name
                 this.serviceIntro = this.dataList[0].Introduce
-                document.getElementById('showBoxIntro').setAttribute('src', this.dataList[0].PicUrl)
+                // document.getElementById('showBoxIntro').setAttribute('src', this.dataList[0].PicUrl)
                 this.showUploadP = false
                 this.serviceDisplayPic = this.dataList[0].PicUrl
                 _this.detailDataList = []
@@ -539,22 +555,10 @@
                     _this.serviceIntroVendor = item.SaveVendor
                     if (item.SaveVendor === 'baidu') {
                       _this.introBlank = false
-                      if (item.Status === 200) {
-                        _this.serviceIntroPicShow = '../../../static/image/pptDone.jpg'
-                      } else if (item.Status === 102) {
-                        _this.serviceIntroPicShow = '../../../static/image/pptTrans.png'
-                      } else if (item.Status === 205) {
-                        _this.serviceIntroPicShow = '../../../static/image/pptError.png'
-                      }
+                      _this.serviceIntroPicShow = '../../../static/image/baiduDone.png'
                     } else if (item.SaveVendor === 'tencent') {
                       _this.introBlank = false
-                      if (item.Status === 200) {
-                        _this.serviceIntroPicShow = '../../../static/image/videoDone.png'
-                      } else if (item.Status === 202) {
-                        _this.serviceIntroPicShow = '../../../static/image/videoTransMain.png'
-                      } else if (item.Status === 205) {
-                        _this.serviceIntroPicShow = '../../../static/image/videoError.png'
-                      }
+                      _this.serviceIntroPicShow = '../../../static/image/videoDone.png'
                     } else {
                       _this.introBlank = false
                       _this.serviceIntroPicShow = item.MediaId
@@ -576,8 +580,7 @@
                       id: item.Id,
                       imgBtnId: 'detailImg' + item.OrderNum,
                       type: type,
-                      content: content,
-                      status: item.Status
+                      content: content
                     })
                   }
                 })
@@ -624,7 +627,7 @@
     margin:0 10px;
   }
   .uploadBoxHead{
-    padding:80px 0 10px;
+    padding:0px 0 10px;
     font-size: 14px;
   }
   .showServiceTitle{
@@ -640,12 +643,12 @@
   }
   .outBox{
     width:760px;
-    height:420px;
     left:50%;
     top:50%;
     margin-left:-380px;
     margin-top:-210px;
     background:#fff;
+    padding: 0px 24px 20px;
     box-shadow:-10px 0 10px rgba(0,0,0,.117647), /*左边阴影*/  
     10px 0 10px rgba(0,0,0,.117647), /*右边阴影*/  
     0 -10px 10px rgba(0,0,0,.117647), /*顶部阴影*/  
@@ -654,6 +657,7 @@
   .uploadBoxCheck{
     width:280px;
     height:158px;
+    padding: 30px 0;
     margin:10px auto 10px;
     background:#f2f9ff;
     color:#898989;
@@ -662,15 +666,18 @@
   }
   .outBox h5{
     width:100%;
-    text-align: center;
     height:50px;
     line-height: 50px;
     margin:10px 0 10px;
-    font-size: 20px;
+    font-size: 22px;
+    color: #2d2d2d;
+  }
+  .qifu_logo{
+    margin:0px auto 20px;
   }
   .divButton{
     width:250px;
-    border-radius: 4px;
+    border-radius: 2px;
     margin:20px auto;
     font-size: 18px;
     height:50px;
@@ -682,9 +689,9 @@
   #serviceManagement .divButton.demo-raised-button {
     margin-right: 0px;
     width:280px;
-    border-radius: 4px;
+    border-radius: 2px;
     margin:20px auto;
-    font-size: 18px;
+    font-size: 14px;
     height:36px;
     line-height: 36px;
     text-align: center;
@@ -1141,5 +1148,6 @@
 }
 #serviceManagement .showImg .filein_upfile a:hover span{display: block;}
 #serviceManagement .uploadBox .demo-flat-button-container{text-align: left;}
-#serviceManagement #selServicePic{position: absolute;top: 0;left:0;right:0;bottom:0;opacity: 0;}
+.ph4 .mu-text-field-input{color: #2d2d2d;}
+.contentInfo .mu-text-field-input{color: #444;}
 </style>

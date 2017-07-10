@@ -377,4 +377,7 @@
 .sele_list_bottom{
   float: left;
 }
+.bookma_btn .mu-raised-button{
+  margin-right: 0;
+}
 </style>

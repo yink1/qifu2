@@ -61,7 +61,6 @@
     margin-left:15px;
   }
   .spanColor{
-    color:#bcbcbc;
-    
+    color:#bcbcbc;    
   }
 </style>

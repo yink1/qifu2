@@ -42,6 +42,6 @@
     background-color: #083c6f;
   }
   .outline .mu-tabs{
-    background:#fff!important;
+    background:#f1f1f1!important;
   }
 </style>

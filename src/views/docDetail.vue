@@ -166,6 +166,11 @@
         docService.GetDocInfo({id: this.$route.params.docId})
          // 接收请求返回值
         .then(response => {
+//        console.log('this.docInfo')
+//        console.log(this.docInfo)
+//        if (response.data.status !== 200) {
+//          this.$router.push('/memberCenter/memberCenter/recharge')
+//        }
           this.docInfo = response.data
           this.docInfo.createTime = this.docInfo.createTime.substring(0, 10).replace(/-/g, '.')
           console.log('this.docInfo')

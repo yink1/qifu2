@@ -11,7 +11,9 @@
         <quillEditor v-if="detailData.type == 'txt'" v-model="detailData.content" :options="editorOption">
         </quillEditor>
         <p class="filein_upfile" v-if="detailData.type == ''">
-          <a href="javascript:;" class="filein_ppt filein_ppt1" :id='detailData.imgBtnId'><span><formDataupload :uptoken="uploadToken" :formId="fromId" @setUploadedFileInfo="setUploadedFileInfo"></formDataupload></span></a>
+          <a href="javascript:;" class="filein_ppt filein_ppt1" :id='detailData.imgBtnId'>
+            <formDataupload :uptoken="uploadToken" :formId="fromId" @setUploadedFileInfo="setUploadedFileInfo"></formDataupload>
+          </a>
           <a href="javascript:;" class="filein_img filein_img1" :id="'videoUploadBtn' + detailIndex" @click='videoUploadBtnClick'><span></span></a>
           <a href="javascript:;" class="filein_video filein_video1" @click='setTxtDetail'><span></span></a>
           <!--<upload :browse_button='detailData.imgBtnId' @setUploadedFileInfo="setUploadedFileInfo">
@@ -138,6 +140,10 @@
   top:0;
   width: 100%;
   background: rgba(255,255,255,0.2);
+}
+.filein_upfile .filein_ppt1 span{
+  display: block;
+  position: static;
 }
 .filein_upfile .filein_ppt {
   background-image:url(../../../static/image/uplod_imgblue.png);

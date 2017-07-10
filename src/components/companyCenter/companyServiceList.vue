@@ -305,7 +305,7 @@ div .service_list_active{
   border-bottom: 1px solid #fff;
 }
 .pic_edit .edit{
-  background: url(../../../static/image/edit_black.png) no-repeat center;
+  background: url(../../../static/image/icon/new_edit.png) no-repeat center;
 }
 .pic_edit .pic_dele{
   background: url(../../../static/image/delete_black.png) no-repeat center;
@@ -318,7 +318,7 @@ div .service_list_active{
 }
 /*经过效果*/
 .pic_edit .edit:hover{
-  background:rgba(255,170,0,.8) url(../../../static/image/edit_white.png) no-repeat center;
+  background:rgba(255,170,0,.8) url(../../../static/image/icon/newBlackEdit.png) no-repeat center;
 }
 
 .pic_edit .pic_dele:hover{
@@ -336,6 +336,7 @@ div .service_list_active{
 .upload_end .pic_title{
   position: absolute;
   bottom: 0;
+  left: 0;
   height: 25%;
   width: 100%;
   background-color: rgba(230,230,230,.5);

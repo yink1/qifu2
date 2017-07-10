@@ -7,7 +7,7 @@
         <h3 class="dialog_title">重新选择一个版式</h3>
         <ul class="composition">
           <li v-for="pic,index in img" @click='select($event, index)'>
-            <img :src="pic.image"/>
+            <img class="img_auto" :src="pic.image"/>
             <img src="../../../static/image/selected.png" class="selected_layout"/>
           </li>
         </ul>
@@ -82,7 +82,9 @@ export default {
   }
   .composition li img{
     display: block;
-    margin: auto;
+  }
+  .img_auto{
+    margin:auto;
   }
   .dialog_title{
     font-size: 22px;

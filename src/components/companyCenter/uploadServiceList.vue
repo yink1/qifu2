@@ -1,5 +1,5 @@
 <template>
-  <div class="uploadDocList uploadServiceList">
+  <div class="uploadDocList uploadServiceList uploadDocListed">
     <div class="blankCon companyListBlank" v-if="getUploadServiceList.length < 1">
       <img src="../../../static/image/icon/blank.png"/>
       <h5>空空如也,去看看别的吧!</h5>
@@ -11,6 +11,7 @@
           <mu-tr>
             <mu-th class="upload_msg">已上传的服务</mu-th>
             <mu-th class='upload_link'>相关链接</mu-th>
+            <mu-th class='my_upload_state'>上传状态</mu-th>
           </mu-tr>
         </mu-thead>
         <mu-tbody>
@@ -28,6 +29,11 @@
             <mu-td class="upload_link">
               <input class='relalink' :value='uploadServiceList.ServiceId | relalink'/>
               <a class="delete_single" v-on:click.stop='copy(index)'>复制链接</a>
+            </mu-td>
+            <mu-td class='upload_state'>
+              <div>
+                {{uploadServiceList.status}}
+              </div>
             </mu-td>
           </mu-tr>
         </mu-tbody>
@@ -155,22 +161,25 @@ export default {
 }
 </script>
 <style>
+  .uploadDocListed .upload_msg{
+  width: 466px;
+}
   .upload_msged:hover{
     cursor:pointer
   }
 .uploadServiceList .upload_info{
   padding-left:0;
 }
-.uploadServiceList .upload_contant{
-  width: 340px;
+.uploadDocListed .upload_contant{
+  width: 270px;
 }
 .companyListBlank{
   height: 300px;
 }
-.uploadServiceList .upload_link{
+.uploadDocListed .upload_link{
   padding-left: 0px;
 }
-.uploadServiceList .relalink{
-  width: 204px !important;
+.uploadDocListed .upload_link{
+  padding:0px;
 }
 </style>

@@ -6,7 +6,8 @@
               <h2 class="register2_tit">您已完成注册，请上传营业执照扫描件认证您的信息</h2>
               <p class="register2_p1">示例：</p>
               <mu-raised-button class="register2_pot por" ref='imgBtn'>
-                <img id="previewImg" src="../../static/image/companyHeader.jpg"/>
+                <img id="previewImg" src="../../static/image/companyHeader.jpg" v-if="previewImgUrl.length === 0"/>
+                <img id="previewImg" :src="previewImgUrl" v-if="previewImgUrl.length > 0"/>
               </mu-raised-button>
               <div class="register2_xzBox cl">
                 <mu-raised-button label="选择文件" class="demo-raised-button fl">
@@ -34,6 +35,7 @@ export default {
     return {
       browse_button: 'fileToggle',
       certificationImgUrl: '',
+      previewImgUrl: '',
       uploadToken: '',
 //    上传等待UI是否显示
       trigger: null,
@@ -48,11 +50,20 @@ export default {
   },
   created () {
     this.getQiniuToken()
+    this.getCertificationImg()
   },
   mounted () {
     this.trigger = this.$refs.imgBtn.$el
   },
   methods: {
+    getCertificationImg () {
+      companyService.getCompanyCertificationInfo()
+      .then(response => {
+        console.log('getCompanyCertificationInfo')
+        console.log(response)
+        this.previewImgUrl = response.data.CertificationUrl
+      })
+    },
     getQiniuToken () {
       qiniuService.getQiniuToken()
       .then(response => {
@@ -68,7 +79,8 @@ export default {
     },
 //  上传三证图片
     editCompanyCertificationImg () {
-      if (this.certificationImgUrl === '') {
+      console.log('this.certificationImgUrl' + '   ' + this.certificationImgUrl + '   ' + '    ' + 'previewImgUrl' + this.previewImgUrl)
+      if (this.certificationImgUrl === '' && this.previewImgUrl === null) {
         showNotice('请上传营业执照扫描件')
         return ''
       }

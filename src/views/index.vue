@@ -69,7 +69,7 @@
     color: #333;
     overflow: auto;
     font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei";
-    background-color: #f4f4f4;
+    background-color: #f1f1f1;
   }
   ul,li{
     list-style: none;

@@ -50,7 +50,7 @@ export default {
     },
     accept: {
       type: String,
-      default: 'image/*'
+      default: 'image/gif,image/jpeg,image/jpg,image/png'
     },
     domain: {
       type: String,
@@ -101,6 +101,8 @@ export default {
           console.log(error)
           this.result = '错误码：' + error.status + ' 错误信息：' + error.data.error
         })
+      } else {
+        _this.open = false
       }
     }
   },

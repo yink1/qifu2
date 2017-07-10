@@ -239,6 +239,7 @@ export default {
 .sumb_revew .mu-icon {
   width:18px;
   height: 16px;
+  margin-left: 0 !important;
   background:url(../../../static/image/comment_icon.png) no-repeat center center;
 }
 .reviewed {

@@ -1,7 +1,7 @@
 <template>
   <div id="companyDetail">
     <div class="detailNav por">
-     <banner class="poa detailBanner" :companyId='companyId'></banner>
+     <banner class="poa detailBanner" :companyId='companyId' :category='category'></banner>
       <div class="detailCon poa">
         <requirement class="poa requirementPoa" :companyId='companyId'></requirement>
         <companyFavorite class="favoritePoa poa" :companyId='companyId' v-if='companyId'></companyFavorite>
@@ -30,7 +30,8 @@
         companyId: '',
         homePageBottom: '',
         docs: {},
-        services: {}
+        services: {},
+        category: 'homePageTop'
       }
     },
     created () {

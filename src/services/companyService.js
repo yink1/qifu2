@@ -21,6 +21,11 @@
       var editCompanyInfoUrl = '/api/company/editCompanyCertification'
       return axiosPost(editCompanyInfoUrl, params)
     },
+//  获取之前上传的企业三证图片
+    getCompanyCertificationInfo (params) {
+      var getCertificationUrl = 'api/company/companyCertificationInfo'
+      return axiosGet(getCertificationUrl, params)
+    },
     // 获取企业信息
     getCompanyInfo (params) {
       var getCompanyInfoUrl = 'api/company/companyInfo'

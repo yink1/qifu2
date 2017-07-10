@@ -118,7 +118,7 @@
   margin-bottom:10px;
 }
 #favoriteCompanyList .demoLi:hover{
-  transform: scale(1.1);
+  transform: scale(1.02);
 }
 #favoriteCompanyList .demoLi:hover .xx{
   display: block;
